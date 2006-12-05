@@ -4,6 +4,8 @@
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"	0.02	14-May-2004	Avoid that the written file becomes the
+"				alternate file (via set cpo-=A)
 "	0.01	15-Nov-2002	file creation
 
 " Avoid installing twice or when in compatible mode
@@ -24,7 +26,10 @@ function s:WriteBackup()
 	    continue
 	endif
 	" Found unused backup letter; write backup and exit. 
+	let l:saved_cpo = &cpo
+	set cpo-=A
 	execute "write ".l:backupfilename
+	let &cpo = l:saved_cpo
 	return
     endwhile
  
