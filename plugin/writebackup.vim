@@ -1,12 +1,39 @@
-" Write subsequent backups of current file with date file extension (format
-" '.YYYYMMDD[a-z]' in the same directory as the file itself. The first backup
-" file has letter 'a' appended, the next 'b', and so on. 
+" writebackup.vim: Write backups of current file with date file extension in the
+" same directory. 
+"
+" DESCRIPTION:
+"   This is the poor man's revision control system, a primitive alternative to
+"   CVS, RCS, Subversion, etc., which works with no additional software and
+"   almost any file system. 
+"   The ':WriteBackup' command writes subsequent backups of the current file
+"   with a current date file extension (format '.YYYYMMDD[a-z]') in the same
+"   directory as the file itself. The first backup of a day has letter 'a'
+"   appended, the next 'b', and so on. (Which means that a file can be backed up
+"   up to 26 times on any given day.) 
+"
+" USAGE:
+"   :WriteBackup
+"
+" INSTALLATION:
+"   Put the script into your user or system VIM plugin directory (e.g.
+"   ~/.vim/plugin). 
 "
 " DEPENDENCIES:
 "   - Requires VIM 6.2. 
 "
+" CONFIGURATION:
+"   In case you already have other custom VIM commands starting with W, you can
+"   define a shorter command alias ':W' in your .vimrc to save some keystrokes.
+"   I like the parallelism between ':w' for a normal write and ':W' for a backup
+"   write. 
+"	command W :WriteBackup
+"
+" Copyright: (C) 2007 by Ingo Karkat
+"   The VIM LICENSE applies to this script; see ':help copyright'. 
+"
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"	0.04	07-Mar-2007	Added documentation. 
 "	0.03	06-Dec-2006	Factored out WriteBackup_GetBackupFilename() to
 "				use in :WriteBackupOfSavedOriginal. 
 "	0.02	14-May-2004	Avoid that the written file becomes the
@@ -14,10 +41,10 @@
 "	0.01	15-Nov-2002	file creation
 
 " Avoid installing twice or when in compatible mode
-if exists("loaded_writebackup") || v:version < 602
+if exists("g:loaded_writebackup") || (v:version < 602)
     finish
 endif
-let loaded_writebackup = 1
+let g:loaded_writebackup = 1
 
 function! WriteBackup_GetBackupFilename()
     let l:date = strftime( "%Y%m%d" )
