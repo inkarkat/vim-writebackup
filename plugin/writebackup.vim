@@ -19,7 +19,9 @@
 "   ~/.vim/plugin). 
 "
 " DEPENDENCIES:
-"   - Requires VIM 6.2. 
+"   - Requires VIM 6.2 or higher. 
+"   - writebackupVersionControl.vim (vimscript #1829) complements this script,
+"     but is not required. 
 "
 " CONFIGURATION:
 "   In case you already have other custom VIM commands starting with W, you can
@@ -33,7 +35,7 @@
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
-"	0.04	07-Mar-2007	Added documentation. 
+"   1.00.004	07-Mar-2007	Added documentation. 
 "	0.03	06-Dec-2006	Factored out WriteBackup_GetBackupFilename() to
 "				use in :WriteBackupOfSavedOriginal. 
 "	0.02	14-May-2004	Avoid that the written file becomes the
