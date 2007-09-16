@@ -88,3 +88,4 @@ endfunction
 
 command! WriteBackup :call <SID>WriteBackup()
 
+" vim: set sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
