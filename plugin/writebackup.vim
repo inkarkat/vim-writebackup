@@ -35,6 +35,9 @@
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"   1.00.005	17-Sep-2007	ENH: Added support for writing backup files into
+"				a different directory via
+"				g:writebackup_BackupDir configuration. 
 "   1.00.004	07-Mar-2007	Added documentation. 
 "	0.03	06-Dec-2006	Factored out WriteBackup_GetBackupFilename() to
 "				use in :WriteBackupOfSavedOriginal. 
@@ -48,11 +51,39 @@ if exists("g:loaded_writebackup") || (v:version < 602)
 endif
 let g:loaded_writebackup = 1
 
-function! WriteBackup_GetBackupFilename()
+if ! exists('g:writebackup_BackupDir')
+    let g:writebackup_BackupDir = '.'
+endif
+
+function! WriteBackup_AdjustFilespecForBackupDir(originalFilespec)
+    if g:writebackup_BackupDir == '.'
+	" The backup will be placed in the same directory as the original file. 
+	return a:originalFilespec
+    endif
+
+    let l:originalDirspec = fnamemodify( a:originalFilespec, ':p:h' )
+    let l:originalFilename = fnamemodify( a:originalFilespec, ':t' )
+
+    let l:adjustedDirspec = ''
+    " Note: fnamemodify( 'path/with/./', ':p' ) will convert the forward slashes
+    " to the correct path separators of the platform by triggering a path
+    " simplification of the '/./' part. 
+    if g:writebackup_BackupDir =~# '^\.[/\\]'
+	let l:adjustedDirspec = fnamemodify( l:originalDirspec . '/' . g:writebackup_BackupDir . '/', ':p' )
+    else
+	let l:adjustedDirspec = fnamemodify( g:writebackup_BackupDir . '/./', ':p' )
+    endif
+    if ! isdirectory( l:adjustedDirspec )
+	throw "WriteBackup: Backup directory '" . l:adjustedDirspec . "' does not exist!"
+    endif
+    return l:adjustedDirspec . l:originalFilename
+endfunction
+
+function! WriteBackup_GetBackupFilename( originalFilespec )
     let l:date = strftime( "%Y%m%d" )
     let l:nr = 'a'
     while( l:nr <= 'z' )
-	let l:backupfilename = expand("%").'.'.l:date.l:nr
+	let l:backupfilename = WriteBackup_AdjustFilespecForBackupDir( a:originalFilespec ) . '.' . l:date . l:nr
 	if( filereadable( l:backupfilename ) )
 	    " Current backup letter already exists, try next one. 
 	    " Vim script cannot increment characters; so convert to number for increment. 
@@ -71,11 +102,10 @@ function! s:WriteBackup()
     try
 	let l:saved_cpo = &cpo
 	set cpo-=A
-	execute 'write ' . WriteBackup_GetBackupFilename()
+	execute 'write ' . WriteBackup_GetBackupFilename(expand('%'))
     catch /^WriteBackup:/
-	" All backup letters a-z are already used; report error. 
 	echohl Error
-	echomsg "Ran out of backup file names"
+	echomsg substitute( v:exception, '^WriteBackup:\s*', '', '' )
 	echohl None
     catch /^Vim\%((\a\+)\)\=:E/
 	echohl Error
