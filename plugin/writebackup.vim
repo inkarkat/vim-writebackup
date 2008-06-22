@@ -58,6 +58,8 @@
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"   1.20.006	13-Jun-2008	Added -bar to :WriteBackup, so that commands can
+"				be chained together. 
 "   1.20.005	18-Sep-2007	ENH: Added support for writing backup files into
 "				a different directory (either one static backup
 "				dir or relative to the original file) via
@@ -165,6 +167,6 @@ function! s:WriteBackup()
     endtry
 endfunction
 
-command! WriteBackup :call <SID>WriteBackup()
+command! -bar WriteBackup :call <SID>WriteBackup()
 
 " vim: set sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
