@@ -51,9 +51,9 @@
 "   define a shorter command alias ':W' in your .vimrc to save some keystrokes.
 "   I like the parallelism between ':w' for a normal write and ':W' for a backup
 "   write. 
-"	command W :WriteBackup
+"	command -bar W :WriteBackup
 "
-" Copyright: (C) 2007 by Ingo Karkat
+" Copyright: (C) 2007-2008 by Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'. 
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
