@@ -58,6 +58,8 @@
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"   1.20.007	21-Jul-2008	BF: Using ErrorMsg instead of Error highlight
+"				group. 
 "   1.20.006	13-Jun-2008	Added -bar to :WriteBackup, so that commands can
 "				be chained together. 
 "   1.20.005	18-Sep-2007	ENH: Added support for writing backup files into
@@ -155,11 +157,11 @@ function! s:WriteBackup()
 	let l:backupFilespecInVimSyntax = escape( tr( WriteBackup_GetBackupFilename(expand('%')), '\', '/' ), ' \%#')
 	execute 'write ' . l:backupFilespecInVimSyntax
     catch /^WriteBackup:/
-	echohl Error
+	echohl ErrorMsg
 	echomsg substitute( v:exception, '^WriteBackup:\s*', '', '' )
 	echohl None
     catch /^Vim\%((\a\+)\)\=:E/
-	echohl Error
+	echohl ErrorMsg
 	echomsg substitute( v:exception, '^Vim\%((\a\+)\)\=:', '', '' )
 	echohl None
     finally
@@ -167,6 +169,6 @@ function! s:WriteBackup()
     endtry
 endfunction
 
-command! -bar WriteBackup :call <SID>WriteBackup()
+command! -bar WriteBackup call <SID>WriteBackup()
 
 " vim: set sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
