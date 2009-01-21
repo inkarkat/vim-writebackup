@@ -53,11 +53,12 @@
 "   write. 
 "	command -bar W :WriteBackup
 "
-" Copyright: (C) 2007-2008 by Ingo Karkat
+" Copyright: (C) 2007-2009 by Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'. 
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"   1.20.008	16-Jan-2009	Now setting v:errmsg on errors. 
 "   1.20.007	21-Jul-2008	BF: Using ErrorMsg instead of Error highlight
 "				group. 
 "   1.20.006	13-Jun-2008	Added -bar to :WriteBackup, so that commands can
@@ -158,11 +159,13 @@ function! s:WriteBackup()
 	execute 'write ' . l:backupFilespecInVimSyntax
     catch /^WriteBackup:/
 	echohl ErrorMsg
-	echomsg substitute( v:exception, '^WriteBackup:\s*', '', '' )
+	let v:errmsg = substitute(v:exception, '^WriteBackup:\s*', '', '')
+	echomsg v:errmsg
 	echohl None
     catch /^Vim\%((\a\+)\)\=:E/
 	echohl ErrorMsg
-	echomsg substitute( v:exception, '^Vim\%((\a\+)\)\=:', '', '' )
+	let v:errmsg = substitute(v:exception, '^Vim\%((\a\+)\)\=:', '', '')
+	echomsg v:errmsg
 	echohl None
     finally
 	let &cpo = l:saved_cpo
