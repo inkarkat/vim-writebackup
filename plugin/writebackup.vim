@@ -152,9 +152,9 @@ function! WriteBackup_GetBackupFilename( originalFilespec )
 endfunction
 
 function! s:WriteBackup()
+    let l:saved_cpo = &cpo
+    set cpo-=A
     try
-	let l:saved_cpo = &cpo
-	set cpo-=A
 	let l:backupFilespecInVimSyntax = escape( tr( WriteBackup_GetBackupFilename(expand('%')), '\', '/' ), ' \%#')
 	execute 'write ' . l:backupFilespecInVimSyntax
     catch /^WriteBackup:/
