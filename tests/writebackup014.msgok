@@ -1,0 +1,4 @@
+Test: Should complain that the relative directory does not exist.
+Backup directory '.../another dir/backup/' does not exist!
+Test: Should complain that the relative directory does not exist.
+Backup directory '.../another dir/backup/' does not exist!
