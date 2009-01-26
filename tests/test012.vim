@@ -9,10 +9,11 @@ let g:WriteBackup_BackupDir = $TEMP . '/WriteBackupTest/doesnotexist'
 cd $TEMP/WriteBackupTest
 edit important.txt
 WriteBackup
-echomsg CanonicalizeFilespecVariable(v:errmsg, 'g:WriteBackup_BackupDir')
 %s/current/fifth/
 w
 
 call ListFiles(expand('<sfile>'))
-if exists('g:debug') && g:debug | finish | else | quitall! | endif
+call vimtest#ProcessMsgout(expand('<sfile>'))
+call CanonicalizeFilespecVariable('g:WriteBackup_BackupDir')
+call vimtest#Quit()
 
