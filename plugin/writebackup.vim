@@ -36,9 +36,9 @@
 "   Please note that this setting may result in name clashes when backing up
 "   files with the same name from different directories!
 "
-"   A directory starting with "./" (or ".\" for MS-DOS et al.) puts the backup
-"   file relative to where the backed-up file is.  The leading "." is replaced
-"   with the path name of the current file:
+"   A directory starting with './' or '../' (or the backslashed-variants '.\'
+"   for MS-DOS et al.) puts the backup file relative to where the backed-up file
+"   is.  The leading '.' is replaced with the path name of the current file:
 "	let g:WriteBackup_BackupDir = './backups'
 "
 "   Backup creation will fail if the backup directory does not exist, the
@@ -99,6 +99,14 @@
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"   1.30.010	24-Jan-2009	BF: Unnamed buffers were backed up as
+"				'.YYYYMMDDa'; now checking for empty original
+"				filespec and throwing exception. 
+"				BF: Now also allowing relative backup dir
+"				in an upper directory (i.e.
+"				g:WriteBackup_BackupDir starting with '../'. 
+"   1.30.009	23-Jan-2009	ENH: The backup directory can now be determined
+"				dynamically through a callback function. 
 "				Renamed configuration variable from
 "				g:writebackup_BackupDir to
 "				g:WriteBackup_BackupDir. 
@@ -144,6 +152,9 @@ function! s:GetSettingFromScope( variableName, scopeList )
 endfunction
 
 function! WriteBackup_GetBackupDir( originalFilespec, isQueryOnly )
+    if empty(a:originalFilespec)
+	throw 'WriteBackup: No file name'
+    endif
     let l:BackupDir = s:GetSettingFromScope( 'WriteBackup_BackupDir', ['b', 'g'] )
     if type(l:BackupDir) == type('')
 	return l:BackupDir
@@ -166,7 +177,7 @@ function! WriteBackup_AdjustFilespecForBackupDir( originalFilespec, isQueryOnly 
     " Note: fnamemodify( 'path/with/./', ':p' ) will convert the forward slashes
     " to the correct path separators of the platform by triggering a path
     " simplification of the '/./' part. 
-    if l:backupDir =~# '^\.[/\\]'
+    if l:backupDir =~# '^\.\.\?[/\\]'
 	" Backup directory is relative to original file. 
 	" Modify dirspec into something relative to CWD. 
 	let l:adjustedDirspec = fnamemodify( fnamemodify( l:originalDirspec . '/' . l:backupDir . '/', ':p' ), ':.' )
