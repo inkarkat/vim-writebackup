@@ -83,7 +83,7 @@
 "
 "							    *writebackup-alias*
 "   In case you already have other custom VIM commands starting with W, you can
-"   define a shorter command alias ':W' in your .vimrc to save some keystrokes.
+"   define a shorter command alias ':W' in your vimrc to save some keystrokes.
 "   I like the parallelism between ':w' for a normal write and ':W' for a backup
 "   write. 
 "	command -bar W :WriteBackup
@@ -99,6 +99,8 @@
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"   1.30.011	11-Feb-2009	BF: On Unix, fnamemodify() doesn't simplify the
+"				'/./' part; added explicit simplify() call. 
 "   1.30.010	24-Jan-2009	BF: Unnamed buffers were backed up as
 "				'.YYYYMMDDa'; now checking for empty original
 "				filespec and throwing exception. 
@@ -135,7 +137,7 @@
 if exists('g:loaded_writebackup') || (v:version < 700)
     finish
 endif
-let g:loaded_writebackup = 120
+let g:loaded_writebackup = 130
 
 if ! exists('g:WriteBackup_BackupDir')
     let g:WriteBackup_BackupDir = '.'
@@ -174,17 +176,17 @@ function! WriteBackup_AdjustFilespecForBackupDir( originalFilespec, isQueryOnly 
     let l:originalFilename = fnamemodify( a:originalFilespec, ':t' )
 
     let l:adjustedDirspec = ''
-    " Note: fnamemodify( 'path/with/./', ':p' ) will convert the forward slashes
-    " to the correct path separators of the platform by triggering a path
-    " simplification of the '/./' part. 
+    " Note: On Windows, fnamemodify( 'path/with/./', ':p' ) will convert the
+    " forward slashes to backslashes by triggering a path simplification of the
+    " '/./' part. On Unix, simplify() will get rid of the '/./' part. 
     if l:backupDir =~# '^\.\.\?[/\\]'
 	" Backup directory is relative to original file. 
 	" Modify dirspec into something relative to CWD. 
-	let l:adjustedDirspec = fnamemodify( fnamemodify( l:originalDirspec . '/' . l:backupDir . '/', ':p' ), ':.' )
+	let l:adjustedDirspec = fnamemodify( simplify(fnamemodify( l:originalDirspec . '/' . l:backupDir . '/', ':p' )), ':.' )
     else
 	" One common backup directory for all original files. 
 	" Modify dirspec into an absolute path. 
-	let l:adjustedDirspec = fnamemodify( l:backupDir . '/./', ':p' )
+	let l:adjustedDirspec = simplify(fnamemodify( l:backupDir . '/./', ':p' ))
     endif
     if ! isdirectory( l:adjustedDirspec ) && ! a:isQueryOnly
 	throw "WriteBackup: Backup directory '" . fnamemodify( l:adjustedDirspec, ':p' ) . "' does not exist!"
