@@ -98,7 +98,10 @@
 "   The VIM LICENSE applies to this script; see ':help copyright'. 
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
+let s:version = 130
 " REVISION	DATE		REMARKS 
+"   1.30.012	13-Feb-2009	Extracted version number and put on a more
+"				prominent place, so that it gets updated. 
 "   1.30.011	11-Feb-2009	BF: On Unix, fnamemodify() doesn't simplify the
 "				'/./' part; added explicit simplify() call. 
 "   1.30.010	24-Jan-2009	BF: Unnamed buffers were backed up as
@@ -137,7 +140,7 @@
 if exists('g:loaded_writebackup') || (v:version < 700)
     finish
 endif
-let g:loaded_writebackup = 130
+let g:loaded_writebackup = s:version
 
 if ! exists('g:WriteBackup_BackupDir')
     let g:WriteBackup_BackupDir = '.'
@@ -236,4 +239,5 @@ endfunction
 
 command! -bar WriteBackup call <SID>WriteBackup()
 
+unlet s:version
 " vim: set sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
