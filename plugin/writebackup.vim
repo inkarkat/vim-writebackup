@@ -1,105 +1,16 @@
 " writebackup.vim: Write backups of current file with date file extension.  
 "
-" DESCRIPTION:
-"   This is a poor man's revision control system, a primitive alternative to
-"   CVS, RCS, Subversion, etc., which works with no additional software and
-"   almost any file system. 
-"   The ':WriteBackup' command writes subsequent backups of the current file
-"   with a 'current date + counter' file extension (format '.YYYYMMDD[a-z]').  
-"   The first backup of a day has letter 'a' appended, the next 'b', and so on.
-"   (Which means that a file can be backed up up to 26 times on any given day.) 
-"
-"   By default, backups are created in the same directory as the original file,
-"   but they can also be placed in a directory relative to the original file, or
-"   in one common backup directory for all files (similar to VIM's 'backupdir'
-"   option), or even in a file-specific location that is determined via a
-"   user-provided callback function. 
-"
-" USAGE:
-"   :WriteBackup
-"
-" INSTALLATION:
-"   Put the script into your user or system VIM plugin directory (e.g.
-"   ~/.vim/plugin). 
-"
 " DEPENDENCIES:
 "   - Requires VIM 7.0 or higher. 
-"   - writebackupVersionControl.vim (vimscript #1829) complements this script,
-"     but is not required. 
-"
-" CONFIGURATION:
-"   For a permanent configuration, put the following commands into your vimrc
-"   file (see :help vimrc). 
-"						      *g:WriteBackup_BackupDir*
-"   To put backups into another directory, specify a backup directory via
-"	let g:WriteBackup_BackupDir = 'D:\backups'
-"   Please note that this setting may result in name clashes when backing up
-"   files with the same name from different directories!
-"
-"   A directory starting with './' or '../' (or the backslashed-variants '.\'
-"   for MS-DOS et al.) puts the backup file relative to where the backed-up file
-"   is.  The leading '.' is replaced with the path name of the current file:
-"	let g:WriteBackup_BackupDir = './backups'
-"
-"   Backup creation will fail if the backup directory does not exist, the
-"   directory will NOT be created automatically! 
-"
-"						 *writebackup-dynamic-backupdir*
-"   If you want to automatically create a non-existing backup directory,
-"   dynamically determine the backup directory based on the current filespec or
-"   any other changing circumstances, you can set a custom callback function:
-"
-"	function MyResolveBackupDir(originalFilespec, isQueryOnly)
-"	    ...
-"	    return backupDirspec
-"	endfunction
-"	let g:WriteBackup_BackupDir = function('MyResolveBackupDir')
-"
-"   This function will be invoked each time a backup is about to be written.
-"   The function must accept one String argument that represents the filespec of
-"   the original file (the filespec can be relative or absolute, like the output
-"   of expand('%')), and one Number that represents a boolean flag whether this
-"   is just a query (no backup is about to be written, so don't cause any
-"   permanent side effects).
-"   It must return a String representing the backup dirspec (again either
-"   relative or absolute, '.' for current directory, please no trailing path
-"   separator). 
-"   Throw an exception if you want to abort the backup. If the exception starts
-"   with 'WriteBackup:', the rest of the exception text will be nicely printed
-"   as the error text to the user. 
-"
-"   Remember that because of the alphabetic numbering, it doesn't make much
-"   sense if the backup directory changes for subsequent backups of the same
-"   file. Use this functionality to adapt the backup location based on filespec,
-"   file type, availability of a backup medium, etc., or to inject additional
-"   side effects like creating backup directories, pruning old backups, etc. 
-"
-"						      *b:WriteBackup_BackupDir*
-"   You can override this global setting for specific buffers via a
-"   buffer-scoped variable, which can be set by an autocmd, ftplugin, or
-"   manually: 
-"	let b:WriteBackup_BackupDir = 'X:\special\backup\folder'
-"
-"
-"							    *writebackup-alias*
-"   In case you already have other custom VIM commands starting with W, you can
-"   define a shorter command alias ':W' in your vimrc to save some keystrokes.
-"   I like the parallelism between ':w' for a normal write and ':W' for a backup
-"   write. 
-"	command -bar W :WriteBackup
-"
-" INTEGRATION:
-" LIMITATIONS:
-" ASSUMPTIONS:
-" KNOWN PROBLEMS:
-" TODO:
 "
 " Copyright: (C) 2007-2009 by Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'. 
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
-let s:version = 130
+"
+let s:version = 131
 " REVISION	DATE		REMARKS 
+"   1.31.013	16-Feb-2009	Split off documentation into separate help file. 
 "   1.30.012	13-Feb-2009	Extracted version number and put on a more
 "				prominent place, so that it gets updated. 
 "   1.30.011	11-Feb-2009	BF: On Unix, fnamemodify() doesn't simplify the
@@ -136,7 +47,7 @@ let s:version = 130
 "				alternate file (via set cpo-=A)
 "	0.01	15-Nov-2002	file creation
 
-" Avoid installing twice or when in compatible mode
+" Avoid installing twice or when in unsupported VIM version. 
 if exists('g:loaded_writebackup') || (v:version < 700)
     finish
 endif
