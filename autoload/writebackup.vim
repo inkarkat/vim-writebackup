@@ -1,7 +1,6 @@
 " writebackup.vim: Write backups of current file with date file extension.  
 "
 " DEPENDENCIES:
-"   - Requires VIM 7.0 or higher. 
 "
 " Copyright: (C) 2007-2009 by Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'. 
@@ -11,6 +10,12 @@
 " REVISION	DATE		REMARKS 
 "   1.50.001	17-Feb-2009	Moved functions from plugin to separate autoload
 "				script. 
+"				Replaced global WriteBackup_...() functions with
+"				autoload functions writebackup#...(). This is an
+"				incompatible change that also requires the
+"				corresponding writebackupVersionControl.vim
+"				version. 
+"				file creation
 
 function! s:GetSettingFromScope( variableName, scopeList )
     for l:scope in a:scopeList
@@ -22,7 +27,7 @@ function! s:GetSettingFromScope( variableName, scopeList )
     throw "No variable named '" . a:variableName . "' defined. "
 endfunction
 
-function! WriteBackup_GetBackupDir( originalFilespec, isQueryOnly )
+function! writebackup#GetBackupDir( originalFilespec, isQueryOnly )
     if empty(a:originalFilespec)
 	throw 'WriteBackup: No file name'
     endif
@@ -34,8 +39,8 @@ function! WriteBackup_GetBackupDir( originalFilespec, isQueryOnly )
     endif
 endfunction
 
-function! WriteBackup_AdjustFilespecForBackupDir( originalFilespec, isQueryOnly )
-    let l:backupDir = WriteBackup_GetBackupDir(a:originalFilespec, a:isQueryOnly)
+function! writebackup#AdjustFilespecForBackupDir( originalFilespec, isQueryOnly )
+    let l:backupDir = writebackup#GetBackupDir(a:originalFilespec, a:isQueryOnly)
     if l:backupDir == '.'
 	" The backup will be placed in the same directory as the original file. 
 	return a:originalFilespec
@@ -63,11 +68,11 @@ function! WriteBackup_AdjustFilespecForBackupDir( originalFilespec, isQueryOnly 
     return l:adjustedDirspec . l:originalFilename
 endfunction
 
-function! WriteBackup_GetBackupFilename( originalFilespec )
+function! writebackup#GetBackupFilename( originalFilespec )
     let l:date = strftime( "%Y%m%d" )
     let l:nr = 'a'
     while( l:nr <= 'z' )
-	let l:backupFilespec = WriteBackup_AdjustFilespecForBackupDir( a:originalFilespec, 0 ) . '.' . l:date . l:nr
+	let l:backupFilespec = writebackup#AdjustFilespecForBackupDir( a:originalFilespec, 0 ) . '.' . l:date . l:nr
 	if( filereadable( l:backupFilespec ) )
 	    " Current backup letter already exists, try next one. 
 	    " Vim script cannot increment characters; so convert to number for increment. 
@@ -86,7 +91,7 @@ function! writebackup#WriteBackup()
     let l:saved_cpo = &cpo
     set cpo-=A
     try
-	let l:backupFilespecInVimSyntax = escape( tr( WriteBackup_GetBackupFilename(expand('%')), '\', '/' ), ' \%#')
+	let l:backupFilespecInVimSyntax = escape( tr( writebackup#GetBackupFilename(expand('%')), '\', '/' ), ' \%#')
 	execute 'write ' . l:backupFilespecInVimSyntax
     catch /^WriteBackup:/
 	echohl ErrorMsg
