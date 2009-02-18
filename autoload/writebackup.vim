@@ -8,7 +8,9 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
-"   1.50.001	17-Feb-2009	Moved functions from plugin to separate autoload
+"   2.00.002	18-Feb-2009	ENH: Disallowing backup of backup file if
+"				writebackupVersionControl plugin is installed. 
+"   2.00.001	17-Feb-2009	Moved functions from plugin to separate autoload
 "				script. 
 "				Replaced global WriteBackup_...() functions with
 "				autoload functions writebackup#...(). This is an
@@ -25,6 +27,13 @@ function! s:GetSettingFromScope( variableName, scopeList )
 	endif
     endfor
     throw "No variable named '" . a:variableName . "' defined. "
+endfunction
+
+function! s:ExistsWriteBackupVersionControlPlugin()
+    " Do not check for the plugin version of writebackupVersionControl here;
+    " that plugin has the mandatory dependency to this plugin and will ensure
+    " that the versions are compatible. 
+    return exists('g:loaded_writebackupVersionControl') && g:loaded_writebackupVersionControl
 endfunction
 
 function! writebackup#GetBackupDir( originalFilespec, isQueryOnly )
@@ -91,11 +100,16 @@ function! writebackup#WriteBackup()
     let l:saved_cpo = &cpo
     set cpo-=A
     try
-	let l:backupFilespecInVimSyntax = escape( tr( writebackup#GetBackupFilename(expand('%')), '\', '/' ), ' \%#')
+	let l:originalFilespec = expand('%')
+	if s:ExistsWriteBackupVersionControlPlugin() && ! writebackupVersionControl#IsOriginalFile(l:originalFilespec)
+	    throw 'WriteBackup: You can only backup the latest file version, not a backup file itself!'
+	endif
+
+	let l:backupFilespecInVimSyntax = escape( tr( writebackup#GetBackupFilename(l:originalFilespec), '\', '/' ), ' \%#')
 	execute 'write ' . l:backupFilespecInVimSyntax
-    catch /^WriteBackup:/
+    catch /^WriteBackup\%(VersionControl\)\?:/
 	echohl ErrorMsg
-	let v:errmsg = substitute(v:exception, '^WriteBackup:\s*', '', '')
+	let v:errmsg = substitute(v:exception, '^WriteBackup\%(VersionControl\)\?:\s*', '', '')
 	echomsg v:errmsg
 	echohl None
     catch /^Vim\%((\a\+)\)\=:E/
