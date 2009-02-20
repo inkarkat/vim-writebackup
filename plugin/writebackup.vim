@@ -54,11 +54,15 @@ if exists('g:loaded_writebackup') || (v:version < 700)
     finish
 endif
 let g:loaded_writebackup = s:version
+" Note: We cannot check for the existence of the writebackupVersionControl
+" plugin here, as it will only be sourced _after_ this plugin. 
 
+"- configuration --------------------------------------------------------------
 if ! exists('g:WriteBackup_BackupDir')
     let g:WriteBackup_BackupDir = '.'
 endif
 
+"- commands -------------------------------------------------------------------
 command! -bar WriteBackup call writebackup#WriteBackup()
 
 unlet s:version
