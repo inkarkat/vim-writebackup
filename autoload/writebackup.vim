@@ -10,6 +10,18 @@
 " REVISION	DATE		REMARKS 
 "   2.00.002	18-Feb-2009	ENH: Disallowing backup of backup file if
 "				writebackupVersionControl plugin is installed. 
+"				BF: On Linux, if the backup directory doesn't
+"				exist, the exception thrown in
+"				writebackup#AdjustFilespecForBackupDir() does
+"				not contain the absolute dirspec, because (on
+"				Linux, not on Windows), the
+"				fnamemodify(...,':p') call does not resolve to
+"				an absolute filespec if the file doesn't exist.
+"				(This is okay and mentioned in the help). 
+"				Now keeping an intermediate variable l:dirspec
+"				(that contains the absolute dirspec) instead of
+"				trying to re-create the absolute missing
+"				dirspec from l:adjustedDirspec. 
 "   2.00.001	17-Feb-2009	Moved functions from plugin to separate autoload
 "				script. 
 "				Replaced global WriteBackup_...() functions with
@@ -64,15 +76,19 @@ function! writebackup#AdjustFilespecForBackupDir( originalFilespec, isQueryOnly 
     " '/./' part. On Unix, simplify() will get rid of the '/./' part. 
     if l:backupDir =~# '^\.\.\?[/\\]'
 	" Backup directory is relative to original file. 
+	let l:dirspec = simplify(fnamemodify( l:originalDirspec . '/' . l:backupDir . '/', ':p' ))
+
 	" Modify dirspec into something relative to CWD. 
-	let l:adjustedDirspec = fnamemodify( simplify(fnamemodify( l:originalDirspec . '/' . l:backupDir . '/', ':p' )), ':.' )
+	let l:adjustedDirspec = fnamemodify(l:dirspec, ':.' )
     else
 	" One common backup directory for all original files. 
-	" Modify dirspec into an absolute path. 
-	let l:adjustedDirspec = simplify(fnamemodify( l:backupDir . '/./', ':p' ))
+	let l:dirspec = simplify(fnamemodify( l:backupDir . '/./', ':p' ))
+
+	" Dirspec should be (and already is) an absolute path. 
+	let l:adjustedDirspec = l:dirspec
     endif
     if ! isdirectory( l:adjustedDirspec ) && ! a:isQueryOnly
-	throw "WriteBackup: Backup directory '" . fnamemodify( l:adjustedDirspec, ':p' ) . "' does not exist!"
+	throw printf("WriteBackup: Backup directory '%s' does not exist!", l:dirspec)
     endif
     return l:adjustedDirspec . l:originalFilename
 endfunction
