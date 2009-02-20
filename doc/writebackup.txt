@@ -1,0 +1,182 @@
+*writebackup.txt*      Write backups of current file with date file extension. 
+
+			WRITE BACKUP    by Ingo Karkat
+							  *writebackup.vim*
+description			|WriteBackup-description|
+usage	    			|WriteBackup-usage|
+installation   			|WriteBackup-installation|
+configuration  			|WriteBackup-configuration|
+integration			|WriteBackup-integration|
+limitations			|WriteBackup-limitations|
+assumptions			|WriteBackup-assumptions|
+known problems			|WriteBackup-known-problems|
+todo				|WriteBackup-todo|
+history				|WriteBackup-history|
+
+==============================================================================
+DESCRIPTION					     *WriteBackup-description*
+
+This is a poor man's revision control system, a primitive alternative to CVS,
+RCS, Subversion, etc., which works with no additional software and almost any
+file system. 
+The :WriteBackup command writes subsequent backups of the current file with a
+'current date + counter' file extension (format '.YYYYMMDD[a-z]'). The first
+backup of a day has letter 'a' appended, the next 'b', and so on. (So that a
+file can be backed up up to 26 times on any given day.) 
+
+By default, backups are created in the same directory as the original file,
+but they can also be placed in a directory relative to the original file, or
+in one common backup directory for all files (similar to VIM's 'backupdir'
+option), or even in a file-specific location that is determined via a
+user-provided callback function. 
+
+==============================================================================
+USAGE							   *WriteBackup-usage*
+>
+    :WriteBackup
+<
+PS: In addition to this VIM script, I also provide the writebackup
+functionality outside of VIM as VBScript and Korn Shell script versions at
+http://ingo-karkat.de/downloads/tools/writebackup/index.html
+
+==============================================================================
+INSTALLATION					    *WriteBackup-installation*
+
+This script is packaged as a|vimball|. If you have the "gunzip" decompressor
+in your PATH, simply edit the *.vba.gz package in VIM; otherwise, decompress
+the archive first, e.g. using WinZip. Inside VIM, install by sourcing the
+vimball or via the|:UseVimball|command. >
+    vim writebackup.vba.gz
+    :so %
+To uninstall, use the|:RmVimball|command. 
+
+DEPENDENCIES					    *WriteBackup-dependencies*
+
+- Requires VIM 7.0 or higher. 
+- writebackupVersionControl.vim (vimscript #1829) complements this script, but
+  is not required. 
+
+==============================================================================
+CONFIGURATION					   *WriteBackup-configuration*
+
+For a permanent configuration, put the following commands into your vimrc file
+(see :help vimrc). 
+						     *g:WriteBackup_BackupDir*
+To put backups into another directory, specify a backup directory via >
+    let g:WriteBackup_BackupDir = 'D:\backups'
+Please note that this setting may result in name clashes when backing up files
+with the same name from different directories!
+
+A directory starting with './' or '../' (or the backslashed-variants '.\' for
+MS-DOS et al.) puts the backup file relative to where the backed-up file is.
+The leading '.' is replaced with the path name of the current file: >
+    let g:WriteBackup_BackupDir = './backups'
+<
+Backup creation will fail if the backup directory does not exist, the
+directory will NOT be created automatically! 
+
+					       *WriteBackup-dynamic-backupdir*
+If you want to automatically create a non-existing backup directory,
+dynamically determine the backup directory based on the current filespec or
+any other changing circumstances, you can set a custom callback function: >
+
+    function MyResolveBackupDir(originalFilespec, isQueryOnly)
+        ...
+        return backupDirspec
+    endfunction
+    let g:WriteBackup_BackupDir = function('MyResolveBackupDir')
+<
+This function will be invoked each time a backup is about to be written. The
+function must accept one String argument that represents the filespec of the
+original file (the filespec can be relative or absolute, like the output of
+expand('%')), and one Number that represents a boolean flag whether this is
+just a query (no backup is about to be written, so don't cause any permanent
+side effects).
+It must return a String representing the backup dirspec (again either relative
+or absolute, '.' for current directory, please no trailing path separator). 
+Throw an exception if you want to abort the backup. If the exception starts
+with 'WriteBackup:', the rest of the exception text will be nicely printed as
+the error text to the user. 
+
+Remember that because of the alphabetic numbering, it doesn't make much sense
+if the backup directory changes for subsequent backups of the same file. Use
+this functionality to adapt the backup location based on filespec, file type,
+availability of a backup medium, etc., or to inject additional side effects
+like creating backup directories, pruning old backups, etc. 
+
+						     *b:WriteBackup_BackupDir*
+You can override this global setting for specific buffers via a buffer-scoped
+variable, which can be set by an autocmd, ftplugin, or manually: >
+    let b:WriteBackup_BackupDir = 'X:\special\backup\folder'
+<
+
+							   *WriteBackup-alias*
+In case you already have other custom VIM commands starting with W, you can
+define a shorter command alias ':W' in your vimrc to save some keystrokes. I
+like the parallelism between ':w' for a normal write and ':W' for a backup
+write. >
+    command -bar W :WriteBackup
+<
+==============================================================================
+INTEGRATION					     WriteBackup-integration
+
+==============================================================================
+LIMITATIONS					     WriteBackup-limitations
+
+==============================================================================
+ASSUMPTIONS					     WriteBackup-assumptions
+
+==============================================================================
+KNOWN PROBLEMS					  WriteBackup-known-problems
+
+==============================================================================
+TODO							    *WriteBackup-todo*
+
+- Check for identical previous backup through wbVC.vim. 
+- Leverage wbVC.vim to disallow backup of backup file.
+
+==============================================================================
+HISTORY							 *WriteBackup-history*
+
+2.00	18-Feb-2009
+- Using separate autoload script to help speed up VIM startup. This is an
+  incompatible change that also requires the corresponding
+  writebackupVersionControl.vim version. *** PLEASE UPDATE
+  writebackupVersionControl.vim (vimscript #1829), too, if you're using it ***
+- ENH: Disallowing backup of backup file if writebackupVersionControl plugin
+  is installed. 
+
+1.31	16-Feb-2009
+Split off documentation into separate help file. Now packaging as VimBall.
+
+1.30	13-Feb-2009
+- ENH: The backup directory can now be determined dynamically through a
+  callback function.
+- Renamed configuration variable from g:writebackup_BackupDir to
+  g:WriteBackup_BackupDir. *** PLEASE UPDATE YOUR CONFIGURATION ***
+- BF: Now also allowing relative backup dir in an upper directory (i.e.
+  g:WriteBackup_BackupDir starting with '../'.
+- BF: Unnamed buffers were backed up as '.YYYYMMDDa'.
+- Now setting v:errmsg on errors and using ErrorMsg instead of Error highlight
+  group. 
+
+1.20	18-Sep-2007
+- ENH: Added support for writing backup files into a different directory
+  (either one static backup dir or relative to the original file) via
+  g:writebackup_BackupDir configuration, as suggested by Vincent DiCarlo. 
+- Now requiring VIM 7.0 or later, because it's using lists. 
+- BF: Special ex command characters ' \%#' must be escaped for ':w' command. 
+
+1.00	07-Mar-2007
+Added documentation. First release. 
+
+0.01	15-Nov-2002
+Started development. 
+
+==============================================================================
+Copyright: (C) 2007-2009 by Ingo Karkat
+The VIM LICENSE applies to this script; see|copyright|. 
+
+Maintainer:	Ingo Karkat <ingo@karkat.de>
+==============================================================================
+ vim:tw=78:ts=8:ft=help:norl:
