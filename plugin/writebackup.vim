@@ -10,6 +10,8 @@
 "
 let s:version = 200
 " REVISION	DATE		REMARKS 
+"   2.00.015	21-Feb-2009	Added g:WriteBackup_AvoidIdenticalBackups
+"				configuration. 
 "   2.00.014	17-Feb-2009	Moved functions from plugin to separate autoload
 "				script. 
 "   1.31.013	16-Feb-2009	Split off documentation into separate help file. 
@@ -60,6 +62,10 @@ let g:loaded_writebackup = s:version
 "- configuration --------------------------------------------------------------
 if ! exists('g:WriteBackup_BackupDir')
     let g:WriteBackup_BackupDir = '.'
+endif
+
+if ! exists('g:WriteBackup_AvoidIdenticalBackups')
+    let g:WriteBackup_AvoidIdenticalBackups = 1
 endif
 
 "- commands -------------------------------------------------------------------
