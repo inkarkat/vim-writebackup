@@ -8,6 +8,11 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"   2.00.003	21-Feb-2009	ENH: No backup is written if there is an
+"				identical previous backup. This requires the
+"				writebackupVersionControl plugin and can be
+"				configured via
+"				g:WriteBackup_AvoidIdenticalBackups. 
 "   2.00.002	18-Feb-2009	ENH: Disallowing backup of backup file if
 "				writebackupVersionControl plugin is installed. 
 "				BF: On Linux, if the backup directory doesn't
@@ -117,12 +122,38 @@ function! writebackup#WriteBackup()
     set cpo-=A
     try
 	let l:originalFilespec = expand('%')
-	if s:ExistsWriteBackupVersionControlPlugin() && ! writebackupVersionControl#IsOriginalFile(l:originalFilespec)
-	    throw 'WriteBackup: You can only backup the latest file version, not a backup file itself!'
+	let l:isNeedToCheckForIdenticalPredecessorAfterBackup = 0
+	if s:ExistsWriteBackupVersionControlPlugin()
+	    if ! writebackupVersionControl#IsOriginalFile(l:originalFilespec)
+		throw 'WriteBackup: You can only backup the latest file version, not a backup file itself!'
+	    elseif g:WriteBackup_AvoidIdenticalBackups
+		if &l:modified
+		    " The current buffer is modified; we can only check for an
+		    " identical backup after the buffer has been written. 
+		    let l:isNeedToCheckForIdenticalPredecessorAfterBackup = 1
+		else
+		    " As the current buffer isn't modified, we just need to compare
+		    " the saved buffer contents with the last backup (if that
+		    " exists). 
+		    let l:currentBackupVersion = writebackupVersionControl#IsIdenticalWithPredecessor(l:originalFilespec)
+		    if ! empty(l:currentBackupVersion)
+			throw printf("WriteBackup: This file is already backed up as '%s'", l:currentBackupVersion)
+		    endif
+		endif
+	    endif
 	endif
 
-	let l:backupFilespecInVimSyntax = escape( tr( writebackup#GetBackupFilename(l:originalFilespec), '\', '/' ), ' \%#')
+	let l:backupFilespec = writebackup#GetBackupFilename(l:originalFilespec)
+	let l:backupFilespecInVimSyntax = escape( tr( l:backupFilespec, '\', '/' ), ' \%#')
 	execute 'write ' . l:backupFilespecInVimSyntax
+
+	if l:isNeedToCheckForIdenticalPredecessorAfterBackup
+	    let l:identicalPredecessorVersion = writebackupVersionControl#IsIdenticalWithPredecessor(l:backupFilespec)
+	    if ! empty(l:identicalPredecessorVersion)
+		call writebackupVersionControl#DeleteBackup(l:backupFilespec)
+		throw printf("WriteBackup: This file is already backed up as '%s'", l:identicalPredecessorVersion)
+	    endif
+	endif
     catch /^WriteBackup\%(VersionControl\)\?:/
 	echohl ErrorMsg
 	let v:errmsg = substitute(v:exception, '^WriteBackup\%(VersionControl\)\?:\s*', '', '')
