@@ -1,0 +1,12 @@
+#!/bin/sh
+
+scriptDir=$(dirname -- "$0")
+[ "$scriptDir" = "." ] && readonly scriptDir=$(dirname -- $(which -- "$0")) || readonly scriptDir=$(cd "$scriptDir" && echo "${PWD}") || { echo >&2 "ERROR: Cannot determine absolute script dirspec!"; exit 1; } 
+[ -d "$scriptDir" ] || { echo >&2 "ERROR: Cannot determine script directory!"; exit 1; } 
+
+testdir=${TEMP:-/tmp}/WriteBackupTest
+[ -d "$testdir" ] && { rm -rf "$testdir" || exit 1; }
+
+# Must preserve timestamps for correct :WriteBackupListVersions output. 
+cp -p -R "${scriptDir}/testdata/" "$testdir"
+
