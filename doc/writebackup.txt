@@ -1,4 +1,4 @@
-*writebackup.txt*      Write backups of current file with date file extension. 
+*writebackup.txt*       Write backups of current file with date file extension. 
 
 			WRITE BACKUP    by Ingo Karkat
 							  *writebackup.vim*
@@ -32,10 +32,19 @@ user-provided callback function.
 
 ==============================================================================
 USAGE							   *WriteBackup-usage*
->
-    :WriteBackup
-<
-PS: In addition to this VIM script, I also provide the writebackup
+								*:WriteBackup*
+:WriteBackup[!]
+			Write the whole current buffer to the next available
+			backup file with a '.YYYYMMDD[a-z]' file extension. 
+			If the last backup is identical with the current
+			buffer contents, no (redundant) backup is written. 
+			With [!], creation of a new backup file is forced: 
+			- even if the last backup is identical
+			- even when no more backup versions (for this day) are
+			  available (the last '.YYYYMMDDz' backup gets
+			  overwritten, even if it is readonly)
+
+PS: In addition to this VIM script, I also provide the basic writebackup
 functionality outside of VIM as VBScript and Korn Shell script versions at
 http://ingo-karkat.de/downloads/tools/writebackup/index.html
 
@@ -53,13 +62,14 @@ To uninstall, use the|:RmVimball|command.
 DEPENDENCIES					    *WriteBackup-dependencies*
 
 - Requires VIM 7.0 or higher. 
-- writebackupVersionControl.vim (vimscript #1829) complements this script, but
-  is not required. 
+- The writebackupVersionControl plugin (vimscript #1829) complements this
+  script with addtional commands and enhances the :WriteBackup command with
+  additional checks, but is not required. 
 
 ==============================================================================
 CONFIGURATION					   *WriteBackup-configuration*
 
-For a permanent configuration, put the following commands into your vimrc file
+For a permanent configuration, put the following commands into your|vimrc|file
 (see :help vimrc). 
 						     *g:WriteBackup_BackupDir*
 To put backups into another directory, specify a backup directory via >
@@ -110,12 +120,20 @@ variable, which can be set by an autocmd, ftplugin, or manually: >
     let b:WriteBackup_BackupDir = 'X:\special\backup\folder'
 <
 
+					 *g:WriteBackup_AvoidIdenticalBackups*
+If the writebackupVersionControl plugin is installed, no backup is written if
+there is an identical predecessor, so you don't need to remember whether
+you've already backed up the current file; no redundant backups will be
+created. If you don't like this check, turn it off via: >
+    let g:WriteBackup_AvoidIdenticalBackups = 0
+<
+
 							   *WriteBackup-alias*
 In case you already have other custom VIM commands starting with W, you can
 define a shorter command alias ':W' in your vimrc to save some keystrokes. I
 like the parallelism between ':w' for a normal write and ':W' for a backup
 write. >
-    command -bar W :WriteBackup
+    command -bar -bang W :WriteBackup<bang>
 <
 ==============================================================================
 INTEGRATION					     WriteBackup-integration
@@ -132,19 +150,19 @@ KNOWN PROBLEMS					  WriteBackup-known-problems
 ==============================================================================
 TODO							    *WriteBackup-todo*
 
-- Check for identical previous backup through wbVC.vim. 
-- Leverage wbVC.vim to disallow backup of backup file.
-
 ==============================================================================
 HISTORY							 *WriteBackup-history*
 
-2.00	18-Feb-2009
+2.00	22-Feb-2009
 - Using separate autoload script to help speed up VIM startup. This is an
   incompatible change that also requires the corresponding
-  writebackupVersionControl.vim version. *** PLEASE UPDATE
-  writebackupVersionControl.vim (vimscript #1829), too, if you're using it ***
-- ENH: Disallowing backup of backup file if writebackupVersionControl plugin
-  is installed. 
+  writebackupVersionControl plugin version. *** PLEASE UPDATE
+  writebackupVersionControl (vimscript #1829), too, if you're using it ***
+- ENH: Disallowing backup of backup file if the writebackupVersionControl
+  plugin is installed. 
+- ENH: No backup is written if there is an identical previous backup. This
+  requires the writebackupVersionControl plugin and can be configured via
+  g:WriteBackup_AvoidIdenticalBackups. 
 
 1.31	16-Feb-2009
 Split off documentation into separate help file. Now packaging as VimBall.
