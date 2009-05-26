@@ -1,3 +1,4 @@
+autoload/writebackup.vim
 plugin/writebackup.vim
 doc/writebackup.txt
 
