@@ -10,6 +10,7 @@
 "
 let s:version = 200
 " REVISION	DATE		REMARKS 
+"   2.00.016	22-Feb-2009	Added [!] to WriteBackup command. 
 "   2.00.015	21-Feb-2009	Added g:WriteBackup_AvoidIdenticalBackups
 "				configuration. 
 "   2.00.014	17-Feb-2009	Moved functions from plugin to separate autoload
@@ -69,7 +70,7 @@ if ! exists('g:WriteBackup_AvoidIdenticalBackups')
 endif
 
 "- commands -------------------------------------------------------------------
-command! -bar WriteBackup call writebackup#WriteBackup()
+command! -bar -bang WriteBackup call writebackup#WriteBackup(<bang>0)
 
 unlet s:version
 " vim: set sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
