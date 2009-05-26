@@ -51,13 +51,13 @@ http://ingo-karkat.de/downloads/tools/writebackup/index.html
 ==============================================================================
 INSTALLATION					    *WriteBackup-installation*
 
-This script is packaged as a|vimball|. If you have the "gunzip" decompressor
+This script is packaged as a |vimball|. If you have the "gunzip" decompressor
 in your PATH, simply edit the *.vba.gz package in VIM; otherwise, decompress
 the archive first, e.g. using WinZip. Inside VIM, install by sourcing the
-vimball or via the|:UseVimball|command. >
+vimball or via the |:UseVimball| command. >
     vim writebackup.vba.gz
     :so %
-To uninstall, use the|:RmVimball|command. 
+To uninstall, use the |:RmVimball| command. 
 
 DEPENDENCIES					    *WriteBackup-dependencies*
 
@@ -69,8 +69,8 @@ DEPENDENCIES					    *WriteBackup-dependencies*
 ==============================================================================
 CONFIGURATION					   *WriteBackup-configuration*
 
-For a permanent configuration, put the following commands into your|vimrc|file
-(see :help vimrc). 
+For a permanent configuration, put the following commands into your |vimrc|:
+
 						     *g:WriteBackup_BackupDir*
 To put backups into another directory, specify a backup directory via >
     let g:WriteBackup_BackupDir = 'D:\backups'
@@ -193,7 +193,7 @@ Started development.
 
 ==============================================================================
 Copyright: (C) 2007-2009 by Ingo Karkat
-The VIM LICENSE applies to this script; see|copyright|. 
+The VIM LICENSE applies to this script; see |copyright|. 
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
 ==============================================================================
