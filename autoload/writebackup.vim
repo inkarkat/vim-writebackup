@@ -8,6 +8,9 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"   2.00.004	22-Feb-2009	ENH: Added a:isForced argument to
+"				writebackup#WriteBackup() to allow forcing via
+"				:WriteBackup!. 
 "   2.00.003	21-Feb-2009	ENH: No backup is written if there is an
 "				identical previous backup. This requires the
 "				writebackupVersionControl plugin and can be
@@ -98,14 +101,31 @@ function! writebackup#AdjustFilespecForBackupDir( originalFilespec, isQueryOnly 
     return l:adjustedDirspec . l:originalFilename
 endfunction
 
-function! writebackup#GetBackupFilename( originalFilespec )
+function! writebackup#GetBackupFilename( originalFilespec, isForced )
+"*******************************************************************************
+"* PURPOSE:
+"   Determine the next available backup version and return the backup filename. 
+"* ASSUMPTIONS / PRECONDITIONS:
+"   None. 
+"* EFFECTS / POSTCONDITIONS:
+"   None. 
+"* INPUTS:
+"   a:originalFilespec	Original file.
+"   a:isForced	Flag whether running out of backup versions is not allowed, and
+"		we'd rather overwrite the last backup. 
+"* RETURN VALUES: 
+"   Next available backup filespec (that does not yet exist) for
+"   a:originalFilespec. If a:isForced is set and no more versions are available,
+"   the last (existing) backup filespec ('.YYYYMMDDz') is returned. 
+"   Throws 'WriteBackup: Ran out of backup file names'. 
+"*******************************************************************************
     let l:date = strftime( "%Y%m%d" )
     let l:nr = 'a'
-    while( l:nr <= 'z' )
+    while l:nr <= 'z'
 	let l:backupFilespec = writebackup#AdjustFilespecForBackupDir( a:originalFilespec, 0 ) . '.' . l:date . l:nr
 	if( filereadable( l:backupFilespec ) )
 	    " Current backup letter already exists, try next one. 
-	    " Vim script cannot increment characters; so convert to number for increment. 
+	    " VIM script cannot increment characters; so convert to number for increment. 
 	    let l:nr = nr2char( char2nr(l:nr) + 1 )
 	    continue
 	endif
@@ -113,11 +133,33 @@ function! writebackup#GetBackupFilename( originalFilespec )
 	return l:backupFilespec
     endwhile
 
-    " All backup letters a-z are already used; report error. 
-    throw 'WriteBackup: Ran out of backup file names'
+    " All backup letters a-z are already used. 
+    if a:isForced
+	return l:backupFilespec
+    else
+	throw 'WriteBackup: Ran out of backup file names'
+    endif
 endfunction
 
-function! writebackup#WriteBackup()
+function! writebackup#WriteBackup( isForced )
+"*******************************************************************************
+"* PURPOSE:
+"   Back up the current buffer contents to the next available backup file. 
+"* ASSUMPTIONS / PRECONDITIONS:
+"   None. 
+"* EFFECTS / POSTCONDITIONS:
+"   Writes backup file, or:
+"   Prints error message. 
+"   May overwrite last backup when running out of backup files and a:isForced. 
+"   May create and delete a backup file when buffer is modified and check for
+"   identical backups is positive. 
+"* INPUTS:
+"   a:isForced	Flag whether creation of a new backup file is forced, i.e. even
+"		if contents are identical or when no more backup versions (for
+"		this day) are available. 
+"* RETURN VALUES: 
+"   None. 
+"*******************************************************************************
     let l:saved_cpo = &cpo
     set cpo-=A
     try
@@ -126,7 +168,7 @@ function! writebackup#WriteBackup()
 	if s:ExistsWriteBackupVersionControlPlugin()
 	    if ! writebackupVersionControl#IsOriginalFile(l:originalFilespec)
 		throw 'WriteBackup: You can only backup the latest file version, not a backup file itself!'
-	    elseif g:WriteBackup_AvoidIdenticalBackups
+	    elseif g:WriteBackup_AvoidIdenticalBackups && ! a:isForced
 		if &l:modified
 		    " The current buffer is modified; we can only check for an
 		    " identical backup after the buffer has been written. 
@@ -143,14 +185,14 @@ function! writebackup#WriteBackup()
 	    endif
 	endif
 
-	let l:backupFilespec = writebackup#GetBackupFilename(l:originalFilespec)
+	let l:backupFilespec = writebackup#GetBackupFilename(l:originalFilespec, a:isForced)
 	let l:backupFilespecInVimSyntax = escape( tr( l:backupFilespec, '\', '/' ), ' \%#')
-	execute 'write ' . l:backupFilespecInVimSyntax
+	execute 'write' . (a:isForced ? '!' : '')  l:backupFilespecInVimSyntax
 
 	if l:isNeedToCheckForIdenticalPredecessorAfterBackup
 	    let l:identicalPredecessorVersion = writebackupVersionControl#IsIdenticalWithPredecessor(l:backupFilespec)
 	    if ! empty(l:identicalPredecessorVersion)
-		call writebackupVersionControl#DeleteBackup(l:backupFilespec)
+		call writebackupVersionControl#DeleteBackup(l:backupFilespec, 0)
 		throw printf("WriteBackup: This file is already backed up as '%s'", l:identicalPredecessorVersion)
 	    endif
 	endif
