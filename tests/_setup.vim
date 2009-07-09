@@ -22,10 +22,7 @@ let s:pathSeparator = (has('win32') || has('win64') ? ';' : ':')
 let $PATH .= s:pathSeparator .  expand('<sfile>:p:h')
 
 " Set up the modifiable test data in the temporary location. 
-silent !setup
-if v:shell_error
-    call vimtest#Quit()
-endif
+call vimtest#System('setup')
 
 " This evaluation function allows to compare the modified test data with the
 " expected result. It is called at the end of each test. 
