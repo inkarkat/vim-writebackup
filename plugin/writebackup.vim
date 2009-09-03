@@ -1,15 +1,17 @@
 " writebackup.vim: Write backups of current file with date file extension.  
 "
 " DEPENDENCIES:
-"   - Requires VIM 7.0 or higher. 
+"   - Requires Vim 7.0 or higher. 
 "
 " Copyright: (C) 2007-2009 by Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'. 
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
-let s:version = 200
+let s:version = 210
 " REVISION	DATE		REMARKS 
+"   2.10.017	27-May-2009	Changes in the autoload script; just bumped
+"				version number here. 
 "   2.00.016	22-Feb-2009	Added [!] to WriteBackup command. 
 "   2.00.015	21-Feb-2009	Added g:WriteBackup_AvoidIdenticalBackups
 "				configuration. 
@@ -41,7 +43,7 @@ let s:version = 200
 "				dir or relative to the original file) via
 "				g:writebackup_BackupDir configuration, as
 "				suggested by Vincent DiCarlo. 
-"				Now requiring VIM 7.0 or later, because it's
+"				Now requiring Vim 7.0 or later, because it's
 "				using lists. 
 "				BF: Special ex command characters ' \%#' must be
 "				escaped for ':w' command. 
@@ -52,7 +54,7 @@ let s:version = 200
 "				alternate file (via set cpo-=A)
 "	0.01	15-Nov-2002	file creation
 
-" Avoid installing twice or when in unsupported VIM version. 
+" Avoid installing twice or when in unsupported Vim version. 
 if exists('g:loaded_writebackup') || (v:version < 700)
     finish
 endif
