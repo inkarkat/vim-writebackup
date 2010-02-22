@@ -1,6 +1,7 @@
 " writebackup.vim: Write backups of current file with date file extension.  
 "
 " DEPENDENCIES:
+"   - escapings.vim autoload script. 
 "
 " Copyright: (C) 2007-2009 by Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'. 
@@ -8,6 +9,9 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"   2.10.005	27-May-2009	Replaced simple filespec escaping with
+"				built-in fnameescape() function (or emulation
+"				for Vim 7.0 / 7.1) via escapings.vim wrapper. 
 "   2.00.004	22-Feb-2009	ENH: Added a:isForced argument to
 "				writebackup#WriteBackup() to allow forcing via
 "				:WriteBackup!. 
@@ -125,7 +129,7 @@ function! writebackup#GetBackupFilename( originalFilespec, isForced )
 	let l:backupFilespec = writebackup#AdjustFilespecForBackupDir( a:originalFilespec, 0 ) . '.' . l:date . l:nr
 	if( filereadable( l:backupFilespec ) )
 	    " Current backup letter already exists, try next one. 
-	    " VIM script cannot increment characters; so convert to number for increment. 
+	    " Vimscript cannot increment characters; so convert to number for increment. 
 	    let l:nr = nr2char( char2nr(l:nr) + 1 )
 	    continue
 	endif
@@ -186,8 +190,8 @@ function! writebackup#WriteBackup( isForced )
 	endif
 
 	let l:backupFilespec = writebackup#GetBackupFilename(l:originalFilespec, a:isForced)
-	let l:backupFilespecInVimSyntax = escape( tr( l:backupFilespec, '\', '/' ), ' \%#')
-	execute 'write' . (a:isForced ? '!' : '')  l:backupFilespecInVimSyntax
+	let l:backupExFilespec = escapings#fnameescape(l:backupFilespec)
+	execute 'write' . (a:isForced ? '!' : '')  l:backupExFilespec
 
 	if l:isNeedToCheckForIdenticalPredecessorAfterBackup
 	    let l:identicalPredecessorVersion = writebackupVersionControl#IsIdenticalWithPredecessor(l:backupFilespec)
