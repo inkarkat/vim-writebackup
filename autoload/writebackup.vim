@@ -3,12 +3,14 @@
 " DEPENDENCIES:
 "   - escapings.vim autoload script. 
 "
-" Copyright: (C) 2007-2009 by Ingo Karkat
+" Copyright: (C) 2007-2010 by Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'. 
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"   2.11.006	23-Feb-2010	Using :keepalt instead of a temporary
+"				:set cpo-=A. 
 "   2.10.005	27-May-2009	Replaced simple filespec escaping with
 "				built-in fnameescape() function (or emulation
 "				for Vim 7.0 / 7.1) via escapings.vim wrapper. 
@@ -164,8 +166,6 @@ function! writebackup#WriteBackup( isForced )
 "* RETURN VALUES: 
 "   None. 
 "*******************************************************************************
-    let l:saved_cpo = &cpo
-    set cpo-=A
     try
 	let l:originalFilespec = expand('%')
 	let l:isNeedToCheckForIdenticalPredecessorAfterBackup = 0
@@ -191,7 +191,7 @@ function! writebackup#WriteBackup( isForced )
 
 	let l:backupFilespec = writebackup#GetBackupFilename(l:originalFilespec, a:isForced)
 	let l:backupExFilespec = escapings#fnameescape(l:backupFilespec)
-	execute 'write' . (a:isForced ? '!' : '')  l:backupExFilespec
+	execute 'keepalt write' . (a:isForced ? '!' : '')  l:backupExFilespec
 
 	if l:isNeedToCheckForIdenticalPredecessorAfterBackup
 	    let l:identicalPredecessorVersion = writebackupVersionControl#IsIdenticalWithPredecessor(l:backupFilespec)
@@ -210,8 +210,6 @@ function! writebackup#WriteBackup( isForced )
 	let v:errmsg = substitute(v:exception, '^Vim\%((\a\+)\)\=:', '', '')
 	echomsg v:errmsg
 	echohl None
-    finally
-	let &cpo = l:saved_cpo
     endtry
 endfunction
 
