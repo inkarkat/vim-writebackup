@@ -154,6 +154,11 @@ function! writebackup#GetBackupFilename( originalFilespec, isForced )
     endif
 endfunction
 
+function! s:ShouldRedateIdenticalBackup( backupFilespec )
+    let l:backupNr = strpart(a:backupFilespec, len(a:backupFilespec) - 1)
+    return (l:backupNr ==# 'a')
+endfunction
+
 function! writebackup#WriteBackup( isForced )
 "*******************************************************************************
 "* PURPOSE:
@@ -194,8 +199,7 @@ function! writebackup#WriteBackup( isForced )
 			let l:identicalPredecessorVersion = writebackupVersionControl#GetVersion(l:identicalPredecessorFilespec)
 			if g:WriteBackup_AvoidIdenticalBackups ==# 'redate'
 			    let l:backupFilespec = writebackup#GetBackupFilename(l:originalFilespec, 0)
-			    let l:backupNr = strpart(l:backupFilespec, len(l:backupFilespec) - 1)
-			    if l:backupNr ==# 'a'
+			    if s:ShouldRedateIdenticalBackup(l:backupFilespec)
 				" This would be today's first backup, but an
 				" earlier identical backup exists, so just
 				" rename that to represent today's first backup. 
@@ -230,8 +234,7 @@ function! writebackup#WriteBackup( isForced )
 	    if ! empty(l:identicalPredecessorFilespec)
 		let l:identicalPredecessorVersion = writebackupVersionControl#GetVersion(l:identicalPredecessorFilespec)
 		if g:WriteBackup_AvoidIdenticalBackups ==# 'redate'
-		    let l:backupNr = strpart(l:backupFilespec, len(l:backupFilespec) - 1)
-		    if l:backupNr ==# 'a'
+		    if s:ShouldRedateIdenticalBackup(l:backupFilespec)
 			" This was today's first backup, and an earlier
 			" identical backup exists, so remove the earlier
 			" identical backup. 
