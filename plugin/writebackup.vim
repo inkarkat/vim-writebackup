@@ -76,4 +76,4 @@ endif
 command! -bar -bang WriteBackup call writebackup#WriteBackup(<bang>0)
 
 unlet s:version
-" vim: set sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
+" vim: set ts=8 sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
