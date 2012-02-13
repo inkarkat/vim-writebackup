@@ -27,6 +27,16 @@ in one common backup directory for all files (similar to Vim's 'backupdir'
 option), or even in a file-specific location that is determined via a
 user-provided callback function. 
 
+RELATED WORKS								     *
+
+- The |writebackupVersionControl.vim| plugin (vimscript #1829) complements
+  this script with additional commands and enhances the :WriteBackup command
+  with more checks, but is not required. 
+- The |writebackupToAdjacentDir.vim| plugin (vimscript #3107) implements a
+  |WriteBackup-dynamic-backupdir| configuration that puts the backup files in
+  an adjacent backup directory if one exists. This helps where the backups
+  cannot be placed into the same directory. 
+
 ==============================================================================
 USAGE							   *WriteBackup-usage*
 								*:WriteBackup*
