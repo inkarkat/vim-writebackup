@@ -131,9 +131,18 @@ variable, which can be set by an autocmd, ftplugin, or manually: >
 If the writebackupVersionControl plugin is installed, no backup is written if
 there is an identical predecessor, so you don't need to remember whether
 you've already backed up the current file; no redundant backups will be
-created. If you don't like this check, turn it off via: >
+created. 
+If you don't like this check, turn it off via: >
     let g:WriteBackup_AvoidIdenticalBackups = 0
-<
+It occasionally happens that an identical backup is kept lying around, e.g.
+when reverting to the backup without removing it. Since that backup would
+misleadingly date the next change much earlier than it actually happened,
+writebackup automatically renames the earlier backup if it would be identical
+to the first backup created today. 
+If you don't want such an automatic rename and instead get the "is already
+backed up" error, turn off redate via: >
+    let g:WriteBackup_AvoidIdenticalBackups = 1
+This reinstates the old behavior of writebackup versions < 3.00.  
 
 							   *WriteBackup-alias*
 In case you already have other custom Vim commands starting with W, you can
@@ -149,6 +158,10 @@ TODO							    *WriteBackup-todo*
 
 ==============================================================================
 HISTORY							 *WriteBackup-history*
+
+3.00	14-Feb-2012
+ENH: New default "redate" for g:WriteBackup_AvoidIdenticalBackups that renames
+an identical backup from an earlier date to be the first backup of today. 
 
 2.10	27-May-2009
 Replaced simple filespec escaping with built-in fnameescape() function (or
