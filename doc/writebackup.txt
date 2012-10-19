@@ -36,6 +36,10 @@ RELATED WORKS								     *
   |WriteBackup-dynamic-backupdir| configuration that puts the backup files in
   an adjacent backup directory if one exists. This helps where the backups
   cannot be placed into the same directory. 
+- The |writebackupAutomator.vim| plugin (vimscript #3940) automatically writes
+  a backup on a day's first write of a file that was backed up in the past,
+  but not yet today. It can be your safety net when you forget to make a
+  backup. 
 
 ==============================================================================
 USAGE							   *WriteBackup-usage*
@@ -52,7 +56,7 @@ USAGE							   *WriteBackup-usage*
 			  overwritten, even if it is readonly)
 
 PS: In addition to this Vim plugin, I also provide the basic writebackup
-functionality outside of Vim as VBScript and Korn Shell script versions at
+functionality outside of Vim as VBScript and Bash Shell script versions at
 http://ingo-karkat.de/downloads/tools/writebackup/index.html
 
 ==============================================================================
@@ -159,9 +163,12 @@ TODO							    *WriteBackup-todo*
 ==============================================================================
 HISTORY							 *WriteBackup-history*
 
-3.00	14-Feb-2012
+3.00	16-Feb-2012
 ENH: New default "redate" for g:WriteBackup_AvoidIdenticalBackups that renames
 an identical backup from an earlier date to be the first backup of today. 
+
+2.11	23-Feb-2010 (unreleased)
+Using :keepalt instead of a temporary :set cpo-=A. 
 
 2.10	27-May-2009
 Replaced simple filespec escaping with built-in fnameescape() function (or
@@ -206,7 +213,7 @@ Added documentation. First release.
 Started development. 
 
 ==============================================================================
-Copyright: (C) 2007-2009 Ingo Karkat
+Copyright: (C) 2007-2012 Ingo Karkat
 The VIM LICENSE applies to this script; see |copyright|. 
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
