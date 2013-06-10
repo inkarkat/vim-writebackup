@@ -4,13 +4,17 @@
 "   - Requires Vim 7.0 or higher. 
 "   - writebackup.vim autoload script. 
 "
-" Copyright: (C) 2007-2009 by Ingo Karkat
+" Copyright: (C) 2007-2012 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'. 
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
-let s:version = 210
+let s:version = 300
 " REVISION	DATE		REMARKS 
+"   3.00.018	14-Feb-2012	ENH: New default "redate" for
+"				g:WriteBackup_AvoidIdenticalBackups that renames
+"				an identical backup from an earlier date to be
+"				the first backup of today. 
 "   2.10.017	27-May-2009	Changes in the autoload script; just bumped
 "				version number here. 
 "   2.00.016	22-Feb-2009	Added [!] to WriteBackup command. 
@@ -69,7 +73,7 @@ if ! exists('g:WriteBackup_BackupDir')
 endif
 
 if ! exists('g:WriteBackup_AvoidIdenticalBackups')
-    let g:WriteBackup_AvoidIdenticalBackups = 1
+    let g:WriteBackup_AvoidIdenticalBackups = 'redate'
 endif
 
 "- commands -------------------------------------------------------------------
