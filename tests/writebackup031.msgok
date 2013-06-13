@@ -1,0 +1,5 @@
+Test: Saved original is identical to old backup
+This file is already backed up as '20080101b'
+
+Test: Saved original is identical to recent backup
++This file is already backed up as '20\d\{6}a'+
