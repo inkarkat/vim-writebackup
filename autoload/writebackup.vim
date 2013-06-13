@@ -154,9 +154,37 @@ function! writebackup#GetBackupFilename( originalFilespec, isForced )
     endif
 endfunction
 
-function! s:ShouldRedateIdenticalBackup( backupFilespec )
+function! writebackup#ShouldRedateIdenticalBackup( backupFilespec )
     let l:backupNr = strpart(a:backupFilespec, len(a:backupFilespec) - 1)
     return (l:backupNr ==# 'a')
+endfunction
+function! writebackup#Redate( identicalPredecessorFilespec, backupFilespec )
+"******************************************************************************
+"* PURPOSE:
+"   Rename the earlier identical predecessor to today's first backup. 
+"* ASSUMPTIONS / PRECONDITIONS:
+"   None. 
+"* EFFECTS / POSTCONDITIONS:
+"   Renames a:identicalPredecessorFilespec to a:backupFilespec. 
+"* INPUTS:
+"   a:identicalPredecessorFilespec  Existing backup file. 
+"   a:backupFilespec		    Next available backup filespec. 
+"* RETURN VALUES: 
+"   None. 
+"   Throws 'WriteBackup: Failed to redate '<version>' as '<version>''. 
+"******************************************************************************
+    let l:identicalPredecessorVersion = writebackupVersionControl#GetVersion(a:identicalPredecessorFilespec)
+    if rename(a:identicalPredecessorFilespec, a:backupFilespec) == 0
+	echomsg printf("This file was already backed up as '%s'; redated as '%s'",
+	\	l:identicalPredecessorVersion,
+	\	writebackupVersionControl#GetVersion(a:backupFilespec)
+	\)
+    else
+	throw printf("WriteBackup: Failed to redate '%s' as '%s'",
+	\	l:identicalPredecessorVersion,
+	\	writebackupVersionControl#GetVersion(a:backupFilespec)
+	\)
+    endif
 endfunction
 
 function! writebackup#WriteBackup( isForced )
@@ -196,28 +224,18 @@ function! writebackup#WriteBackup( isForced )
 		    " exists). 
 		    let l:identicalPredecessorFilespec = writebackupVersionControl#IsIdenticalWithPredecessor(l:originalFilespec)
 		    if ! empty(l:identicalPredecessorFilespec)
-			let l:identicalPredecessorVersion = writebackupVersionControl#GetVersion(l:identicalPredecessorFilespec)
 			if g:WriteBackup_AvoidIdenticalBackups ==# 'redate'
 			    let l:backupFilespec = writebackup#GetBackupFilename(l:originalFilespec, 0)
-			    if s:ShouldRedateIdenticalBackup(l:backupFilespec)
+			    if writebackup#ShouldRedateIdenticalBackup(l:backupFilespec)
 				" This would be today's first backup, but an
 				" earlier identical backup exists, so just
 				" rename that to represent today's first backup. 
-				if rename(l:identicalPredecessorFilespec, l:backupFilespec) == 0
-				    echomsg printf("This file was already backed up as '%s'; redated as '%s'",
-				    \	l:identicalPredecessorVersion,
-				    \	writebackupVersionControl#GetVersion(l:backupFilespec)
-				    \)
-				    return
-				else
-				    throw printf("WriteBackup: Failed to redate '%s' as '%s'",
-				    \	l:identicalPredecessorVersion,
-				    \	writebackupVersionControl#GetVersion(l:backupFilespec)
-				    \)
-				endif
+				call writebackup#Redate(l:identicalPredecessorFilespec, l:backupFilespec)
+				return
 			    endif
 			endif
 
+			let l:identicalPredecessorVersion = writebackupVersionControl#GetVersion(l:identicalPredecessorFilespec)
 			throw printf("WriteBackup: This file is already backed up as '%s'", l:identicalPredecessorVersion)
 		    endif
 		endif
@@ -234,7 +252,7 @@ function! writebackup#WriteBackup( isForced )
 	    if ! empty(l:identicalPredecessorFilespec)
 		let l:identicalPredecessorVersion = writebackupVersionControl#GetVersion(l:identicalPredecessorFilespec)
 		if g:WriteBackup_AvoidIdenticalBackups ==# 'redate'
-		    if s:ShouldRedateIdenticalBackup(l:backupFilespec)
+		    if writebackup#ShouldRedateIdenticalBackup(l:backupFilespec)
 			" This was today's first backup, and an earlier
 			" identical backup exists, so remove the earlier
 			" identical backup. 
