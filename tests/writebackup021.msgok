@@ -1,0 +1,5 @@
+Test: This file won't be backed up.
+Don't backup unimportant files
+
+Test: Causing VIM error during backup dir resolution
+E117: Unknown function: s:DoesNotExist
