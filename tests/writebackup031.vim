@@ -1,6 +1,7 @@
 " Test avoiding backups identical to last backup. 
 " Tests that no backup file is created when the original file is unmodified. 
 
+let g:WriteBackup_AvoidIdenticalBackups = 1
 runtime plugin/writebackupVersionControl.vim
 
 cd $TEMP/WriteBackupTest
@@ -19,4 +20,3 @@ WriteBackup
 
 call ListFiles()
 call vimtest#Quit() 
-
