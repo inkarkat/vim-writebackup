@@ -204,7 +204,7 @@ Split off documentation into separate help file. Now packaging as VimBall.
   (either one static backup dir or relative to the original file) via
   g:writebackup_BackupDir configuration, as suggested by Vincent DiCarlo.
 - Now requiring Vim 7.0 or later, because it's using lists.
-- BF: Special ex command characters ' \%#' must be escaped for ':w' command.
+- BF: Special Ex command characters ' \%#' must be escaped for ':w' command.
 
 1.00	07-Mar-2007
 Added documentation. First release.
