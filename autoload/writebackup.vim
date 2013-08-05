@@ -10,6 +10,8 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   3.01.009	27-Jun-2013	Also catch custom exceptions throws e.g. from
+"				a g:WriteBackup_BackupDir Funcref.
 "   3.01.008	14-Jun-2013	Use ingo/err.vim to implement abort on error.
 "   3.00.007	14-Feb-2012	ENH: New "redate" option for
 "				g:WriteBackup_AvoidIdenticalBackups that renames
@@ -57,7 +59,7 @@
 function! s:GetSettingFromScope( variableName, scopeList )
     for l:scope in a:scopeList
 	let l:variable = l:scope . ':' . a:variableName
-	if exists( l:variable )
+	if exists(l:variable)
 	    execute 'return ' . l:variable
 	endif
     endfor
@@ -75,7 +77,7 @@ function! writebackup#GetBackupDir( originalFilespec, isQueryOnly )
     if empty(a:originalFilespec)
 	throw 'WriteBackup: No file name'
     endif
-    let l:BackupDir = s:GetSettingFromScope( 'WriteBackup_BackupDir', ['b', 'g'] )
+    let l:BackupDir = s:GetSettingFromScope('WriteBackup_BackupDir', ['b', 'g'])
     if type(l:BackupDir) == type('')
 	return l:BackupDir
     else
@@ -90,27 +92,27 @@ function! writebackup#AdjustFilespecForBackupDir( originalFilespec, isQueryOnly 
 	return a:originalFilespec
     endif
 
-    let l:originalDirspec = fnamemodify( a:originalFilespec, ':p:h' )
-    let l:originalFilename = fnamemodify( a:originalFilespec, ':t' )
+    let l:originalDirspec = fnamemodify(a:originalFilespec, ':p:h')
+    let l:originalFilename = fnamemodify(a:originalFilespec, ':t')
 
     let l:adjustedDirspec = ''
-    " Note: On Windows, fnamemodify( 'path/with/./', ':p' ) will convert the
+    " Note: On Windows, fnamemodify('path/with/./', ':p') will convert the
     " forward slashes to backslashes by triggering a path simplification of the
     " '/./' part. On Unix, simplify() will get rid of the '/./' part.
     if l:backupDir =~# '^\.\.\?[/\\]'
 	" Backup directory is relative to original file.
-	let l:dirspec = simplify(fnamemodify( l:originalDirspec . '/' . l:backupDir . '/', ':p' ))
+	let l:dirspec = simplify(fnamemodify(l:originalDirspec . '/' . l:backupDir . '/', ':p'))
 
 	" Modify dirspec into something relative to CWD.
 	let l:adjustedDirspec = fnamemodify(l:dirspec, ':.' )
     else
 	" One common backup directory for all original files.
-	let l:dirspec = simplify(fnamemodify( l:backupDir . '/./', ':p' ))
+	let l:dirspec = simplify(fnamemodify(l:backupDir . '/./', ':p'))
 
 	" Dirspec should be (and already is) an absolute path.
 	let l:adjustedDirspec = l:dirspec
     endif
-    if ! isdirectory( l:adjustedDirspec ) && ! a:isQueryOnly
+    if ! isdirectory(l:adjustedDirspec) && ! a:isQueryOnly
 	throw printf("WriteBackup: Backup directory '%s' does not exist!", l:dirspec)
     endif
     return l:adjustedDirspec . l:originalFilename
@@ -134,14 +136,14 @@ function! writebackup#GetBackupFilename( originalFilespec, isForced )
 "   the last (existing) backup filespec ('.YYYYMMDDz') is returned.
 "   Throws 'WriteBackup: Ran out of backup file names'.
 "*******************************************************************************
-    let l:date = strftime( "%Y%m%d" )
+    let l:date = strftime('%Y%m%d')
     let l:nr = 'a'
     while l:nr <= 'z'
-	let l:backupFilespec = writebackup#AdjustFilespecForBackupDir( a:originalFilespec, 0 ) . '.' . l:date . l:nr
-	if( filereadable( l:backupFilespec ) )
+	let l:backupFilespec = writebackup#AdjustFilespecForBackupDir(a:originalFilespec, 0) . '.' . l:date . l:nr
+	if(filereadable(l:backupFilespec))
 	    " Current backup letter already exists, try next one.
 	    " Vimscript cannot increment characters; so convert to number for increment.
-	    let l:nr = nr2char( char2nr(l:nr) + 1 )
+	    let l:nr = nr2char(char2nr(l:nr) + 1)
 	    continue
 	endif
 	" Found unused backup letter.
@@ -276,7 +278,7 @@ function! writebackup#WriteBackup( isForced )
     catch /^WriteBackup\%(VersionControl\)\?:/
 	call ingo#err#SetCustomException('WriteBackup\%(VersionControl\)\?')
 	return 0
-    catch /^Vim\%((\a\+)\)\=:E/
+    catch
 	call ingo#err#SetVimException()
 	return 0
     endtry
