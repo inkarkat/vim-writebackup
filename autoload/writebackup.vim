@@ -3,6 +3,7 @@
 " DEPENDENCIES:
 "   - escapings.vim autoload script.
 "   - ingo/err.vim autoload script
+"   - ingo/plugin/setting.vim autoload script
 "
 " Copyright: (C) 2007-2013 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
@@ -10,6 +11,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   3.01.010	06-Aug-2013	Retire s:GetSettingFromScope().
 "   3.01.009	27-Jun-2013	Also catch custom exceptions throws e.g. from
 "				a g:WriteBackup_BackupDir Funcref.
 "   3.01.008	14-Jun-2013	Use ingo/err.vim to implement abort on error.
@@ -56,16 +58,6 @@
 "				version.
 "				file creation
 
-function! s:GetSettingFromScope( variableName, scopeList )
-    for l:scope in a:scopeList
-	let l:variable = l:scope . ':' . a:variableName
-	if exists(l:variable)
-	    execute 'return ' . l:variable
-	endif
-    endfor
-    throw "No variable named '" . a:variableName . "' defined. "
-endfunction
-
 function! s:ExistsWriteBackupVersionControlPlugin()
     " Do not check for the plugin version of writebackupVersionControl here;
     " that plugin has the mandatory dependency to this plugin and will ensure
@@ -77,7 +69,7 @@ function! writebackup#GetBackupDir( originalFilespec, isQueryOnly )
     if empty(a:originalFilespec)
 	throw 'WriteBackup: No file name'
     endif
-    let l:BackupDir = s:GetSettingFromScope('WriteBackup_BackupDir', ['b', 'g'])
+    let l:BackupDir = ingo#plugin#setting#GetBufferLocal('WriteBackup_BackupDir')
     if type(l:BackupDir) == type('')
 	return l:BackupDir
     else
