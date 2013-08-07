@@ -63,16 +63,18 @@ http://ingo-karkat.de/downloads/tools/writebackup/index.html
 INSTALLATION					    *WriteBackup-installation*
 
 This script is packaged as a |vimball|. If you have the "gunzip" decompressor
-in your PATH, simply edit the *.vba.gz package in Vim; otherwise, decompress
+in your PATH, simply edit the *.vmb.gz package in Vim; otherwise, decompress
 the archive first, e.g. using WinZip. Inside Vim, install by sourcing the
 vimball or via the |:UseVimball| command. >
-    vim writebackup.vba.gz
+    vim writebackup*.vmb.gz
     :so %
 To uninstall, use the |:RmVimball| command.
 
 DEPENDENCIES					    *WriteBackup-dependencies*
 
 - Requires Vim 7.0 or higher.
+- Requires the |ingo-library.vim| plugin (vimscript #4433), version 1.008 or
+  higher.
 - The |writebackupVersionControl.vim| plugin (vimscript #1829) complements
   this script with additional commands and enhances the :WriteBackup command
   with more checks, but is not required.
@@ -163,6 +165,10 @@ TODO							    *WriteBackup-todo*
 ==============================================================================
 HISTORY							 *WriteBackup-history*
 
+3.01	RELEASEME
+- :WriteBackup now aborts on error.
+- Add dependency to ingo-library (vimscript #4433).
+
 3.00	16-Feb-2012
 ENH: New default "redate" for g:WriteBackup_AvoidIdenticalBackups that renames
 an identical backup from an earlier date to be the first backup of today.
@@ -213,7 +219,7 @@ Added documentation. First release.
 Started development.
 
 ==============================================================================
-Copyright: (C) 2007-2012 Ingo Karkat
+Copyright: (C) 2007-2013 Ingo Karkat
 The VIM LICENSE applies to this plugin; see |copyright|.
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
