@@ -1,6 +1,5 @@
 if g:runVimTest !~# 'dependency\d\+'
-    " Do not source the plugins for the dependency tests. 
-    "
+    " Do not yet source the plugins for the dependency tests. 
     runtime plugin/writebackup.vim
 
     " Only source the version control extensions if we're actually testing them. 
@@ -22,7 +21,9 @@ let s:pathSeparator = (has('win32') || has('win64') ? ';' : ':')
 let $PATH .= s:pathSeparator .  expand('<sfile>:p:h')
 
 " Set up the modifiable test data in the temporary location. 
-call vimtest#System('setup')
+if ! vimtest#System('setup', 1)
+    call vimtest#BailOut('External setup script failed with exit status ' . v:shell_error)
+endif
 
 " This evaluation function allows to compare the modified test data with the
 " expected result. It is called at the end of each test. 
