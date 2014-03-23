@@ -1,7 +1,7 @@
-" Test writing of backups in a dynamic directory. 
-" Tests returning of the current dir and a relative dir. 
-" Tests aborting the backup via 'WriteBackup:' exception. 
-" Tests aborting via VIM error. 
+" Test writing of backups in a dynamic directory.
+" Tests returning of the current dir and a relative dir.
+" Tests aborting the backup via 'WriteBackup:' exception.
+" Tests aborting via Vim error.
 
 function! MyBackupDir(originalFilespec, isQueryOnly)
     let l:originalFilename = fnamemodify(a:originalFilespec, ':t')
@@ -26,18 +26,29 @@ WriteBackup
 %s/fifth/CURRENT/
 write
 
+call vimtest#StartTap()
+call vimtap#Plan(2)
+
 edit not\ important.txt
-echomsg 'Test: This file won''t be backed up.'
-WriteBackup
+try
+    WriteBackup
+    call vimtap#Fail('expected error on unimportant file')
+catch
+    call vimtap#err#Thrown("Don't backup unimportant files", 'error shown')
+endtry
+
 
 edit someplace\ else.txt
 cd $VIM
 WriteBackup
 
 file causing\ error.txt
-echomsg 'Test: Causing VIM error during backup dir resolution'
-WriteBackup
+try
+    WriteBackup
+    call vimtap#Fail('expected error after causing Vim error during backup dir resolution')
+catch
+    call vimtap#err#Thrown('E117: Unknown function: s:DoesNotExist', 'error shown')
+endtry
 
 call ListFiles()
-call vimtest#Quit() 
-
+call vimtest#Quit()
