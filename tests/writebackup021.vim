@@ -30,12 +30,7 @@ call vimtest#StartTap()
 call vimtap#Plan(2)
 
 edit not\ important.txt
-try
-    WriteBackup
-    call vimtap#Fail('expected error on unimportant file')
-catch
-    call vimtap#err#Thrown("Don't backup unimportant files", 'error shown')
-endtry
+call vimtap#err#Errors("Don't backup unimportant files", 'WriteBackup', 'error shown')
 
 
 edit someplace\ else.txt
@@ -43,12 +38,7 @@ cd $VIM
 WriteBackup
 
 file causing\ error.txt
-try
-    WriteBackup
-    call vimtap#Fail('expected error after causing Vim error during backup dir resolution')
-catch
-    call vimtap#err#Thrown('E117: Unknown function: s:DoesNotExist', 'error shown')
-endtry
+call vimtap#err#Errors('E117: Unknown function: s:DoesNotExist', 'WriteBackup', 'error shown')
 
 call ListFiles()
 call vimtest#Quit()
