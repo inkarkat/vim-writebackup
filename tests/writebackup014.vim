@@ -1,5 +1,5 @@
-" Test writing of backups in a different relative directory. 
-" Tests that the backup file is created in that directory regardless of the CWD. 
+" Test writing of backups in a different relative directory.
+" Tests that the backup file is created in that directory regardless of the CWD.
 
 let g:WriteBackup_BackupDir = './backup'
 cd $TEMP/WriteBackupTest
@@ -15,14 +15,26 @@ WriteBackup
 %s/seventh/CURRENT/
 write
 
+call vimtest#StartTap()
+call vimtap#Plan(2)
+
 cd $TEMP/WriteBackupTest
 edit another\ dir/some\ file.txt
-echomsg 'Test: Should complain that the relative directory does not exist.'
-WriteBackup
+try
+    WriteBackup
+    call vimtap#Fail('Should complain that the relative directory does not exist')
+catch
+    call vimtap#err#ThrownLike("Backup directory '.*[/\\\\]WriteBackupTest[/\\\\]another dir[/\\\\]backup[/\\\\]\\?' does not exist!", 'error shown')
+endtry
 
 saveas $TEMP/WriteBackupTest/another\ dir/new\ file
-echomsg 'Test: Should complain that the relative directory does not exist.'
-WriteBackup
+try
+    WriteBackup
+    call vimtap#Fail('Should complain that the relative directory does not exist')
+catch
+    call vimtap#err#ThrownLike("Backup directory '.*[/\\\\]WriteBackupTest[/\\\\]another dir[/\\\\]backup[/\\\\]\\?' does not exist!", 'error shown')
+endtry
+
 let b:WriteBackup_BackupDir = '../backup'
 WriteBackup
 cd $VIM
@@ -31,4 +43,3 @@ WriteBackup
 
 call ListFiles()
 call vimtest#Quit()
-
