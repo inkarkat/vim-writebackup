@@ -3,6 +3,7 @@
 " file's dir and CWD. 
 
 let g:WriteBackup_BackupDir = $TEMP . '/WriteBackupTest/backup'
+if exists('+autochdir') | set noautochdir | endif
 cd $TEMP/WriteBackupTest
 edit important.txt
 %s/current/fifth/
