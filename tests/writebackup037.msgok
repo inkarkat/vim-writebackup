@@ -1,0 +1,7 @@
+Test: Writing identical to old backup
+
++This file was already backed up as '20080101b'; redated as '20\d\{6}a'+
+
+Test: Writing identical to recent backup
+
++This file is already backed up as '20\d\{6}b'+
