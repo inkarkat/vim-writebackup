@@ -1,5 +1,5 @@
-" Test writing of backups with special names. 
-" Tests spaces, upper/lowercase and special ex command characters like % and #. 
+" Test writing of backups with special names.
+" Tests spaces, upper/lowercase and special Ex command characters like % and #.
 
 cd $TEMP/WriteBackupTest
 enew
@@ -12,5 +12,4 @@ saveas! concise
 WriteBackup
 
 call ListFiles()
-call vimtest#Quit() 
-
+call vimtest#Quit()
