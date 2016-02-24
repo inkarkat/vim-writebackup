@@ -1,0 +1,31 @@
+.
+    [DIRECTORY]
+./another dir
+    [DIRECTORY]
+./another dir/some file.txt
+    -> just junk
+./backup
+    [DIRECTORY]
+./backup/someplace else.txt.20080124a
+    -> here
+./backup/someplace else.txt.20080124b
+    -> there
+./backup/someplace else.txt.20080124c
+    -> and everywhere
+./important.txt
+    -> current revision
+./important.txt.19990815a
+    -> it all started here
+./important.txt.20061201a
+    -> first revision
+./important.txt.20061231a
+    -> second revision
+./important.txt.20080101a
+    -> third revision
+./important.txt.20080101b
+    -> fourth revision
+./not important.txt
+    -> just junk
+./someplace else.txt
+    -> it's a song
+
