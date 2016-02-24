@@ -1,7 +1,7 @@
 " writebackup.vim: Write backups of current file with date file extension.
 "
 " DEPENDENCIES:
-"   - escapings.vim autoload script.
+"   - ingo/compat.vim autoload script
 "   - ingo/err.vim autoload script
 "   - ingo/plugin/setting.vim autoload script
 "
@@ -11,6 +11,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   3.01.011	08-Aug-2013	Move escapings.vim into ingo-library.
 "   3.01.010	06-Aug-2013	Retire s:GetSettingFromScope().
 "   3.01.009	27-Jun-2013	Also catch custom exceptions throws e.g. from
 "				a g:WriteBackup_BackupDir Funcref.
@@ -240,7 +241,7 @@ function! writebackup#WriteBackup( isForced )
 
 	" Perform the backup.
 	if ! exists('l:backupFilespec') | let l:backupFilespec = writebackup#GetBackupFilename(l:originalFilespec, a:isForced) | endif
-	let l:backupExFilespec = escapings#fnameescape(l:backupFilespec)
+	let l:backupExFilespec = ingo#compat#fnameescape(l:backupFilespec)
 	execute 'keepalt write' . (a:isForced ? '!' : '')  l:backupExFilespec
 
 	if l:isNeedToCheckForIdenticalPredecessorAfterBackup
