@@ -2,7 +2,7 @@
 " Tests that writing the backup file doesn't reset the 'modified' flag. 
 " Tests that writing the backup file doesn't change the CWD. 
 
-call vimtest#StartTap(expand('<sfile>'))
+call vimtest#StartTap()
 call vimtap#Plan(5)
 cd $TEMP/WriteBackupTest
 edit important.txt
