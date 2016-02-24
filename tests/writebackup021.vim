@@ -38,7 +38,7 @@ cd $VIM
 WriteBackup
 
 file causing\ error.txt
-call vimtap#err#Errors('E117: Unknown function: s:DoesNotExist', 'WriteBackup', 'error shown')
+call vimtap#err#ErrorsLike('^E117: .* s:DoesNotExist', 'WriteBackup', 'Unknown function error shown')
 
 call ListFiles()
 call vimtest#Quit()
