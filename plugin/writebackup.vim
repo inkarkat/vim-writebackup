@@ -2,15 +2,17 @@
 "
 " DEPENDENCIES:
 "   - Requires Vim 7.0 or higher.
-"   - writebackup.vim autoload script.
+"   - writebackup.vim autoload script
+"   - ingo/err.vim autoload script
 "
-" Copyright: (C) 2007-2012 Ingo Karkat
+" Copyright: (C) 2007-2013 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 let s:version = 300
 " REVISION	DATE		REMARKS
+"   3.01.019	14-Jun-2013	Use ingo/err.vim to implement abort on error.
 "   3.00.018	14-Feb-2012	ENH: New default "redate" for
 "				g:WriteBackup_AvoidIdenticalBackups that renames
 "				an identical backup from an earlier date to be
@@ -68,6 +70,7 @@ let g:loaded_writebackup = s:version
 " plugin here, as it will only be sourced _after_ this plugin.
 
 "- configuration --------------------------------------------------------------
+
 if ! exists('g:WriteBackup_BackupDir')
     let g:WriteBackup_BackupDir = '.'
 endif
@@ -77,7 +80,8 @@ if ! exists('g:WriteBackup_AvoidIdenticalBackups')
 endif
 
 "- commands -------------------------------------------------------------------
-command! -bar -bang WriteBackup call writebackup#WriteBackup(<bang>0)
+
+command! -bar -bang WriteBackup if ! writebackup#WriteBackup(<bang>0) | echoerr ingo#err#Get() | endif
 
 unlet s:version
 " vim: set ts=8 sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
