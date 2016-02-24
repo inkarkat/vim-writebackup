@@ -13,22 +13,12 @@ write
 call vimtest#StartTap()
 call vimtap#Plan(2)
 
-try
-    WriteBackup
-    call vimtap#Fail('expected error on saved original that is identical to old backup')
-catch
-    call vimtap#err#Thrown("This file is already backed up as '20080101b'", 'already backed up error shown')
-endtry
+call vimtap#err#Errors("This file is already backed up as '20080101b'", 'WriteBackup', 'already backed up error shown')
 
 %s/fourth/fifth/
 write
 WriteBackup
-try
-    WriteBackup
-    call vimtap#Fail('expected error when saved original is identical to recent backup')
-catch
-    call vimtap#err#ThrownLike("This file is already backed up as '20\\d\\{6}a'", 'identical backup error shown')
-endtry
+call vimtap#err#ErrorsLike("This file is already backed up as '20\\d\\{6}a'", 'WriteBackup', 'identical backup error shown')
 
 call ListFiles()
 call vimtest#Quit()
