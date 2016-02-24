@@ -19,12 +19,7 @@ call vimtap#Plan(1)
 %s/fourth/fifth/
 write
 WriteBackup
-try
-    WriteBackup
-    call vimtap#Fail('expected error when saved original is identical to recent backup')
-catch
-    call vimtap#err#ThrownLike("This file is already backed up as '20\\d\\{6}b'", 'identical backup error shown')
-endtry
+call vimtap#err#ErrorsLike("This file is already backed up as '20\\d\\{6}b'", 'WriteBackup', 'identical backup error shown')
 
 call ListFiles()
 call vimtest#Quit()
