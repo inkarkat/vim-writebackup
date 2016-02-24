@@ -6,6 +6,7 @@ description			|WriteBackup-description|
 usage				|WriteBackup-usage|
 installation			|WriteBackup-installation|
 configuration			|WriteBackup-configuration|
+limitations			|WriteBackup-limitations|
 known problems			|WriteBackup-known-problems|
 todo				|WriteBackup-todo|
 history				|WriteBackup-history|
@@ -158,6 +159,8 @@ write. >
     command -bar -bang W :WriteBackup<bang>
 <
 ==============================================================================
+LIMITATIONS					     *WriteBackup-limitations*
+
 KNOWN PROBLEMS					  *WriteBackup-known-problems*
 
 TODO							    *WriteBackup-todo*
@@ -165,9 +168,10 @@ TODO							    *WriteBackup-todo*
 ==============================================================================
 HISTORY							 *WriteBackup-history*
 
-3.01	RELEASEME
+3.01	29-Jan-2014
 - :WriteBackup now aborts on error.
-- Add dependency to ingo-library (vimscript #4433).
+- Add dependency to ingo-library (vimscript #4433). *** You need to separately
+  install ingo-library (vimscript #4433) version 1.012 (or higher)! ***
 
 3.00	16-Feb-2012
 ENH: New default "redate" for g:WriteBackup_AvoidIdenticalBackups that renames
@@ -219,7 +223,7 @@ Added documentation. First release.
 Started development.
 
 ==============================================================================
-Copyright: (C) 2007-2013 Ingo Karkat
+Copyright: (C) 2007-2014 Ingo Karkat
 The VIM LICENSE applies to this plugin; see |copyright|.
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
