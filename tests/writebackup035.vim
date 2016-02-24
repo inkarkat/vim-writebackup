@@ -1,5 +1,6 @@
 " Test forcing backup identical to last backup. 
 
+let g:WriteBackup_AvoidIdenticalBackups = 1
 runtime plugin/writebackupVersionControl.vim
 
 cd $TEMP/WriteBackupTest
@@ -15,4 +16,3 @@ WriteBackup!
 
 call ListFiles()
 call vimtest#Quit() 
-
