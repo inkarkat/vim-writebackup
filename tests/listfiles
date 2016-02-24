@@ -1,0 +1,19 @@
+#!/bin/bash
+
+scriptDir=$(dirname -- "$0")
+[ "$scriptDir" = "." ] && readonly scriptDir=$(dirname -- $(which -- "$0")) || readonly scriptDir=$(cd "$scriptDir" && echo "${PWD}") || { echo >&2 "ERROR: Cannot determine absolute script dirspec!"; exit 1; } 
+[ -d "$scriptDir" ] || { echo >&2 "ERROR: Cannot determine script directory!"; exit 1; } 
+
+testdir=${TEMP:-/tmp}/WriteBackupTest
+pushd "$testdir" >/dev/null
+find . -print | sort | while read filespec
+do
+    echo "$filespec" | sed -e '/\.1999[0-9][0-9][0-9][0-9]/n' -e '/\.200[6-8][0-9][0-9][0-9][0-9]/!s+\.[12][0-9][0-9][0-9][0-9][0-9][0-9][0-9]+.XXXXXXXX+g'
+    if [ -d "$filespec" ]; then
+	echo '    [DIRECTORY]'
+    else
+	head -n 1 "$filespec" | sed 's/^/    -> /'
+    fi
+done
+popd >/dev/null
+
