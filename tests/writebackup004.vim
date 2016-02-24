@@ -10,19 +10,9 @@ endfor
 call vimtest#StartTap()
 call vimtap#Plan(2)
 
-try
-    WriteBackup
-    call vimtap#Fail('expected error after exhausting all backup filenames')
-catch
-    call vimtap#err#Thrown('Ran out of backup file names', 'error shown')
-endtry
+call vimtap#err#Errors('Ran out of backup file names', 'WriteBackup', 'error shown')
 
-try
-    WriteBackup
-    call vimtap#Fail('expected error after trying once more')
-catch
-    call vimtap#err#Thrown('Ran out of backup file names', 'error shown on retry')
-endtry
+call vimtap#err#Errors('Ran out of backup file names', 'WriteBackup', 'error shown on retry')
 
 call ListFiles()
 call vimtest#Quit()
