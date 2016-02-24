@@ -7,6 +7,7 @@ scriptDir=$(dirname -- "$0")
 testdir=${TEMP:-/tmp}/WriteBackupTest
 [ -d "$testdir" ] && { rm -rf "$testdir" || exit 1; }
 
-# Must preserve timestamps for correct :WriteBackupListVersions output. 
-cp -p -R "${scriptDir}/testdata/" "$testdir"
+# Note: The zip archive automatically preserves file timestamps for correct
+# :WriteBackupListVersions output. 
+unzip "${scriptDir}/testdata.zip" -d "$testdir"
 
