@@ -20,20 +20,10 @@ call vimtap#Plan(2)
 
 cd $TEMP/WriteBackupTest
 edit another\ dir/some\ file.txt
-try
-    WriteBackup
-    call vimtap#Fail('Should complain that the relative directory does not exist')
-catch
-    call vimtap#err#ThrownLike("Backup directory '.*[/\\\\]WriteBackupTest[/\\\\]another dir[/\\\\]backup[/\\\\]\\?' does not exist!", 'error shown')
-endtry
+call vimtap#err#ErrorsLike("Backup directory '.*[/\\\\]WriteBackupTest[/\\\\]another dir[/\\\\]backup[/\\\\]\\?' does not exist!", 'WriteBackup', 'error shown')
 
 saveas $TEMP/WriteBackupTest/another\ dir/new\ file
-try
-    WriteBackup
-    call vimtap#Fail('Should complain that the relative directory does not exist')
-catch
-    call vimtap#err#ThrownLike("Backup directory '.*[/\\\\]WriteBackupTest[/\\\\]another dir[/\\\\]backup[/\\\\]\\?' does not exist!", 'error shown')
-endtry
+call vimtap#err#ErrorsLike("Backup directory '.*[/\\\\]WriteBackupTest[/\\\\]another dir[/\\\\]backup[/\\\\]\\?' does not exist!", 'WriteBackup', 'error shown')
 
 let b:WriteBackup_BackupDir = '../backup'
 WriteBackup
