@@ -1,6 +1,8 @@
 " Test writing of backups in a different relative directory.
 " Tests that the backup file is created in that directory regardless of the CWD.
 
+call vimtest#SkipAndQuitIf(! isdirectory($VIM), '$VIM (' . $VIM . ') does not exist')
+
 let g:WriteBackup_BackupDir = './backup'
 cd $TEMP/WriteBackupTest
 edit important.txt
