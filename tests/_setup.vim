@@ -1,3 +1,5 @@
+call vimtest#AddDependency('vim-ingo-library')
+
 if g:runVimTest !~# 'dependency\d\+'
     " Do not yet source the plugins for the dependency tests.
     runtime plugin/writebackup.vim
