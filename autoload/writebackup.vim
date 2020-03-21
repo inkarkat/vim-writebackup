@@ -1,63 +1,13 @@
 " writebackup.vim: Write backups of current file with date file extension.
 "
 " DEPENDENCIES:
-"   - ingo/compat.vim autoload script
-"   - ingo/err.vim autoload script
-"   - ingo/plugin/setting.vim autoload script
+"   - ingo-library.vim plugin
+"   - writebackupVersionControl.vim plugin (optional)
 "
-" Copyright: (C) 2007-2013 Ingo Karkat
+" Copyright: (C) 2007-2020 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
-"
-" REVISION	DATE		REMARKS
-"   3.01.011	08-Aug-2013	Move escapings.vim into ingo-library.
-"   3.01.010	06-Aug-2013	Retire s:GetSettingFromScope().
-"   3.01.009	27-Jun-2013	Also catch custom exceptions throws e.g. from
-"				a g:WriteBackup_BackupDir Funcref.
-"   3.01.008	14-Jun-2013	Use ingo/err.vim to implement abort on error.
-"   3.00.007	14-Feb-2012	ENH: New "redate" option for
-"				g:WriteBackup_AvoidIdenticalBackups that renames
-"				an identical backup from an earlier date to be
-"				the first backup of today.
-"   			    	Change return value of
-"				writebackupVersionControl#IsIdenticalWithPredecessor()
-"				from predecessor version to full filespec.
-"   2.11.006	23-Feb-2010	Using :keepalt instead of a temporary
-"				:set cpo-=A.
-"   2.10.005	27-May-2009	Replaced simple filespec escaping with
-"				built-in fnameescape() function (or emulation
-"				for Vim 7.0 / 7.1) via escapings.vim wrapper.
-"   2.00.004	22-Feb-2009	ENH: Added a:isForced argument to
-"				writebackup#WriteBackup() to allow forcing via
-"				:WriteBackup!.
-"   2.00.003	21-Feb-2009	ENH: No backup is written if there is an
-"				identical previous backup. This requires the
-"				writebackupVersionControl plugin and can be
-"				configured via
-"				g:WriteBackup_AvoidIdenticalBackups.
-"   2.00.002	18-Feb-2009	ENH: Disallowing backup of backup file if
-"				writebackupVersionControl plugin is installed.
-"				BF: On Linux, if the backup directory doesn't
-"				exist, the exception thrown in
-"				writebackup#AdjustFilespecForBackupDir() does
-"				not contain the absolute dirspec, because (on
-"				Linux, not on Windows), the
-"				fnamemodify(...,':p') call does not resolve to
-"				an absolute filespec if the file doesn't exist.
-"				(This is okay and mentioned in the help).
-"				Now keeping an intermediate variable l:dirspec
-"				(that contains the absolute dirspec) instead of
-"				trying to re-create the absolute missing
-"				dirspec from l:adjustedDirspec.
-"   2.00.001	17-Feb-2009	Moved functions from plugin to separate autoload
-"				script.
-"				Replaced global WriteBackup_...() functions with
-"				autoload functions writebackup#...(). This is an
-"				incompatible change that also requires the
-"				corresponding writebackupVersionControl.vim
-"				version.
-"				file creation
 
 function! s:ExistsWriteBackupVersionControlPlugin()
     " Do not check for the plugin version of writebackupVersionControl here;
