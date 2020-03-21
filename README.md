@@ -1,18 +1,9 @@
-*writebackup.txt*       Write backups of current file with date file extension.
+WRITE BACKUP
+===============================================================================
+_by Ingo Karkat_
 
-			WRITE BACKUP    by Ingo Karkat
-							  *writebackup.vim*
-description			|WriteBackup-description|
-usage				|WriteBackup-usage|
-installation			|WriteBackup-installation|
-configuration			|WriteBackup-configuration|
-limitations			|WriteBackup-limitations|
-known problems			|WriteBackup-known-problems|
-todo				|WriteBackup-todo|
-history				|WriteBackup-history|
-
-==============================================================================
-DESCRIPTION					     *WriteBackup-description*
+DESCRIPTION
+------------------------------------------------------------------------------
 
 This is a poor man's revision control system, a primitive alternative to CVS,
 RCS, Subversion, etc., which works with no additional software and almost any
@@ -28,96 +19,99 @@ in one common backup directory for all files (similar to Vim's 'backupdir'
 option), or even in a file-specific location that is determined via a
 user-provided callback function.
 
-SEE ALSO								     *
+### SEE ALSO
 
-- The |writebackupVersionControl.vim| plugin (vimscript #1829) complements
+- The writebackupVersionControl.vim plugin ([vimscript #1829](http://www.vim.org/scripts/script.php?script_id=1829)) complements
   this script with additional commands and enhances the :WriteBackup command
   with more checks, but is not required.
-- The |writebackupToAdjacentDir.vim| plugin (vimscript #3107) implements a
-  |WriteBackup-dynamic-backupdir| configuration that puts the backup files in
+- The writebackupToAdjacentDir.vim plugin ([vimscript #3107](http://www.vim.org/scripts/script.php?script_id=3107)) implements a
+  WriteBackup-dynamic-backupdir configuration that puts the backup files in
   an adjacent backup directory if one exists. This helps where the backups
   cannot be placed into the same directory.
-- The |writebackupAutomator.vim| plugin (vimscript #3940) automatically writes
+- The writebackupAutomator.vim plugin ([vimscript #3940](http://www.vim.org/scripts/script.php?script_id=3940)) automatically writes
   a backup on a day's first write of a file that was backed up in the past,
   but not yet today. It can be your safety net when you forget to make a
   backup.
 
-==============================================================================
-USAGE							   *WriteBackup-usage*
-								*:WriteBackup*
-:WriteBackup[!]
-			Write the whole current buffer to the next available
-			backup file with a '.YYYYMMDD[a-z]' file extension.
-			If the last backup is identical with the current
-			buffer contents, no (redundant) backup is written.
-			With [!], creation of a new backup file is forced:
-			- even if the last backup is identical
-			- even when no more backup versions (for this day) are
-			  available (the last '.YYYYMMDDz' backup gets
-			  overwritten, even if it is readonly)
-			- even if writing of backups is disallowed by a
-			  configured |g:WriteBackup_ExclusionPredicates|
+USAGE
+------------------------------------------------------------------------------
 
-PS: In addition to this Vim plugin, I also provide the basic writebackup
-functionality outside of Vim as VBScript and Bash Shell script versions at
-http://ingo-karkat.de/downloads/tools/writebackup/index.html
+    :WriteBackup[!]
+                            Write the whole current buffer to the next available
+                            backup file with a '.YYYYMMDD[a-z]' file extension.
+                            If the last backup is identical with the current
+                            buffer contents, no (redundant) backup is written.
+                            With [!], creation of a new backup file is forced:
+                            - even if the last backup is identical
+                            - even when no more backup versions (for this day) are
+                              available (the last '.YYYYMMDDz' backup gets
+                              overwritten, even if it is readonly)
+                            - even if writing of backups is disallowed by a
+                              configured g:WriteBackup_ExclusionPredicates
 
-==============================================================================
-INSTALLATION					    *WriteBackup-installation*
+    PS: In addition to this Vim plugin, I also provide the basic writebackup
+    functionality outside of Vim as VBScript and Bash Shell script versions at
+    http://ingo-karkat.de/downloads/tools/writebackup/index.html
+
+INSTALLATION
+------------------------------------------------------------------------------
 
 The code is hosted in a Git repo at
     https://github.com/inkarkat/vim-writebackup
 You can use your favorite plugin manager, or "git clone" into a directory used
-for Vim |packages|. Releases are on the "stable" branch, the latest unstable
+for Vim packages. Releases are on the "stable" branch, the latest unstable
 development snapshot on "master".
 
-This script is also packaged as a |vimball|. If you have the "gunzip"
-decompressor in your PATH, simply edit the *.vmb.gz package in Vim; otherwise,
+This script is also packaged as a vimball. If you have the "gunzip"
+decompressor in your PATH, simply edit the \*.vmb.gz package in Vim; otherwise,
 decompress the archive first, e.g. using WinZip. Inside Vim, install by
-sourcing the vimball or via the |:UseVimball| command. >
+sourcing the vimball or via the :UseVimball command.
+
     vim writebackup*.vmb.gz
     :so %
-To uninstall, use the |:RmVimball| command.
 
-DEPENDENCIES					    *WriteBackup-dependencies*
+To uninstall, use the :RmVimball command.
+
+### DEPENDENCIES
 
 - Requires Vim 7.0 or higher.
-- Requires the |ingo-library.vim| plugin (vimscript #4433), version 1.012 or
+- Requires the ingo-library.vim plugin ([vimscript #4433](http://www.vim.org/scripts/script.php?script_id=4433)), version 1.012 or
   higher.
-- The |writebackupVersionControl.vim| plugin (vimscript #1829) complements
+- The writebackupVersionControl.vim plugin ([vimscript #1829](http://www.vim.org/scripts/script.php?script_id=1829)) complements
   this script with additional commands and enhances the :WriteBackup command
   with more checks, but is not required.
 
-==============================================================================
-CONFIGURATION					   *WriteBackup-configuration*
+CONFIGURATION
+------------------------------------------------------------------------------
 
-For a permanent configuration, put the following commands into your |vimrc|:
+For a permanent configuration, put the following commands into your vimrc:
 
-						     *g:WriteBackup_BackupDir*
-To put backups into another directory, specify a backup directory via >
+To put backups into another directory, specify a backup directory via
+
     let g:WriteBackup_BackupDir = 'D:\backups'
+
 Please note that this setting may result in name clashes when backing up files
 with the same name from different directories!
 
-A directory starting with './' or '../' (or the backslashed-variants '.\' for
+A directory starting with './' or '../' (or the backslashed-variants '.\\' for
 MS-DOS et al.) puts the backup file relative to where the backed-up file is.
-The leading '.' is replaced with the path name of the current file: >
+The leading '.' is replaced with the path name of the current file:
+
     let g:WriteBackup_BackupDir = './backups'
-<
+
 Backup creation will fail if the backup directory does not exist, the
 directory will NOT be created automatically!
 
-					       *WriteBackup-dynamic-backupdir*
 If you want to automatically create a non-existing backup directory,
 dynamically determine the backup directory based on the current filespec or
-any other changing circumstances, you can set a custom callback function: >
+any other changing circumstances, you can set a custom callback function:
 
     function MyResolveBackupDir(originalFilespec, isQueryOnly)
         ...
         return backupDirspec
     endfunction
     let g:WriteBackup_BackupDir = function('MyResolveBackupDir')
-<
+
 This function will be invoked each time a backup is about to be written. The
 function must accept one String argument that represents the filespec of the
 original file (the filespec can be relative or absolute, like the output of
@@ -136,109 +130,109 @@ this functionality to adapt the backup location based on filespec, file type,
 availability of a backup medium, etc., or to inject additional side effects
 like creating backup directories, pruning old backups, etc.
 
-						     *b:WriteBackup_BackupDir*
 You can override this global setting for specific buffers via a buffer-scoped
-variable, which can be set by an autocmd, ftplugin, or manually: >
-    let b:WriteBackup_BackupDir = 'X:\special\backup\folder'
-<
+variable, which can be set by an autocmd, ftplugin, or manually:
 
-					 *g:WriteBackup_AvoidIdenticalBackups*
+    let b:WriteBackup_BackupDir = 'X:\special\backup\folder'
+
 If the writebackupVersionControl plugin is installed, no backup is written if
 there is an identical predecessor, so you don't need to remember whether
 you've already backed up the current file; no redundant backups will be
 created.
-If you don't like this check, turn it off via: >
+If you don't like this check, turn it off via:
+
     let g:WriteBackup_AvoidIdenticalBackups = 0
+
 It occasionally happens that an identical backup is kept lying around, e.g.
 when reverting to the backup without removing it. Since that backup would
 misleadingly date the next change much earlier than it actually happened,
 writebackup automatically renames the earlier backup if it would be identical
 to the first backup created today.
 If you don't want such an automatic rename and instead get the "is already
-backed up" error, turn off redate via: >
-    let g:WriteBackup_AvoidIdenticalBackups = 1
-This reinstates the old behavior of writebackup versions < 3.00.
+backed up" error, turn off redate via:
 
-							   *WriteBackup-alias*
+    let g:WriteBackup_AvoidIdenticalBackups = 1
+
+This reinstates the old behavior of writebackup versions &lt; 3.00.
+
 In case you already have other custom Vim commands starting with W, you can
 define a shorter command alias ':W' in your vimrc to save some keystrokes. I
 like the parallelism between ':w' for a normal write and ':W' for a backup
-write. >
+write.
+
     command -bar -bang W :WriteBackup<bang>
-<
-==============================================================================
-LIMITATIONS					     *WriteBackup-limitations*
 
-KNOWN PROBLEMS					  *WriteBackup-known-problems*
-
-TODO							    *WriteBackup-todo*
-
-CONTRIBUTING					      *writebackup-contribute*
+CONTRIBUTING
+------------------------------------------------------------------------------
 
 Report any bugs, send patches, or suggest features via the issue tracker at
 https://github.com/inkarkat/vim-writebackup/issues or email (address below).
 
-==============================================================================
-HISTORY							 *WriteBackup-history*
+HISTORY
+------------------------------------------------------------------------------
 
-3.01	29-Jan-2014
+##### 3.01    29-Jan-2014
 - :WriteBackup now aborts on error.
-- Add dependency to ingo-library (vimscript #4433). *** You need to separately
-  install ingo-library (vimscript #4433) version 1.012 (or higher)! ***
+- Add dependency to ingo-library ([vimscript #4433](http://www.vim.org/scripts/script.php?script_id=4433)).
 
-3.00	16-Feb-2012
-ENH: New default "redate" for g:WriteBackup_AvoidIdenticalBackups that renames
+__You need to separately
+  install ingo-library ([vimscript #4433](http://www.vim.org/scripts/script.php?script_id=4433)) version 1.012 (or higher)!__
+
+##### 3.00    16-Feb-2012
+- ENH: New default "redate" for g:WriteBackup\_AvoidIdenticalBackups that renames
 an identical backup from an earlier date to be the first backup of today.
 
-2.11	23-Feb-2010 (unreleased)
-Using :keepalt instead of a temporary :set cpo-=A.
+##### 2.11    23-Feb-2010 (unreleased)
+- Using :keepalt instead of a temporary :set cpo-=A.
 
-2.10	27-May-2009
-Replaced simple filespec escaping with built-in fnameescape() function (or
+##### 2.10    27-May-2009
+- Replaced simple filespec escaping with built-in fnameescape() function (or
 emulation for Vim 7.0 / 7.1) via escapings.vim wrapper.
 
-2.00	22-Feb-2009
+##### 2.00    22-Feb-2009
 - Using separate autoload script to help speed up Vim startup. This is an
   incompatible change that also requires the corresponding
-  writebackupVersionControl plugin version. *** PLEASE UPDATE
-  writebackupVersionControl (vimscript #1829), too, if you're using it ***
+  writebackupVersionControl plugin version.
+
+__PLEASE UPDATE
+  writebackupVersionControl ([vimscript #1829](http://www.vim.org/scripts/script.php?script_id=1829)), too, if you're using it__
 - ENH: Disallowing backup of backup file if the writebackupVersionControl
   plugin is installed.
 - ENH: No backup is written if there is an identical previous backup. This
   requires the writebackupVersionControl plugin and can be configured via
-  g:WriteBackup_AvoidIdenticalBackups.
+  g:WriteBackup\_AvoidIdenticalBackups.
 
-1.31	16-Feb-2009
-Split off documentation into separate help file. Now packaging as VimBall.
+##### 1.31    16-Feb-2009
+- Split off documentation into separate help file. Now packaging as VimBall.
 
-1.30	13-Feb-2009
+##### 1.30    13-Feb-2009
 - ENH: The backup directory can now be determined dynamically through a
   callback function.
-- Renamed configuration variable from g:writebackup_BackupDir to
-  g:WriteBackup_BackupDir. *** PLEASE UPDATE YOUR CONFIGURATION ***
+- Renamed configuration variable from g:writebackup\_BackupDir to
+  g:WriteBackup\_BackupDir.
+
+__PLEASE UPDATE YOUR CONFIGURATION__
 - BF: Now also allowing relative backup dir in an upper directory (i.e.
-  g:WriteBackup_BackupDir starting with '../'.
+  g:WriteBackup\_BackupDir starting with '../'.
 - BF: Unnamed buffers were backed up as '.YYYYMMDDa'.
 - Now setting v:errmsg on errors and using ErrorMsg instead of Error highlight
   group.
 
-1.20	18-Sep-2007
+##### 1.20    18-Sep-2007
 - ENH: Added support for writing backup files into a different directory
   (either one static backup dir or relative to the original file) via
-  g:writebackup_BackupDir configuration, as suggested by Vincent DiCarlo.
+  g:writebackup\_BackupDir configuration, as suggested by Vincent DiCarlo.
 - Now requiring Vim 7.0 or later, because it's using lists.
-- BF: Special Ex command characters ' \%#' must be escaped for ':w' command.
+- BF: Special Ex command characters ' \\%#' must be escaped for ':w' command.
 
-1.00	07-Mar-2007
-Added documentation. First release.
+##### 1.00    07-Mar-2007
+- Added documentation. First release.
 
-0.01	15-Nov-2002
-Started development.
+##### 0.01    15-Nov-2002
+- Started development.
 
-==============================================================================
-Copyright: (C) 2007-2020 Ingo Karkat
-The VIM LICENSE applies to this plugin; see |copyright|.
+------------------------------------------------------------------------------
+Copyright: (C) 2007-2020 Ingo Karkat -
+The [VIM LICENSE](http://vimdoc.sourceforge.net/htmldoc/uganda.html#license) applies to this plugin.
 
-Maintainer:	Ingo Karkat <ingo@karkat.de>
-==============================================================================
- vim:tw=78:ts=8:ft=help:norl:
+Maintainer:     Ingo Karkat &lt;ingo@karkat.de&gt;
