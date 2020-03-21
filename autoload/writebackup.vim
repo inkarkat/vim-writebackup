@@ -156,6 +156,14 @@ function! writebackup#WriteBackup( isForced )
     try
 	let l:originalFilespec = expand('%')
 	let l:isNeedToCheckForIdenticalPredecessorAfterBackup = 0
+
+	for l:ExclusionPredicate in g:WriteBackup_ExclusionPredicates
+	    let l:excluded = ingo#actions#EvaluateOrFunc(l:ExclusionPredicate)
+	    if ! empty(l:excluded)
+		throw 'WriteBackup: ' . (type(l:excluded) == type('') ? l:excluded : 'Backup is disallowed') . ' (add ! to override)'
+	    endif
+	endfor
+
 	if s:ExistsWriteBackupVersionControlPlugin()
 	    if ! writebackupVersionControl#IsOriginalFile(l:originalFilespec)
 		throw 'WriteBackup: You can only backup the latest file version, not a backup file itself!'
