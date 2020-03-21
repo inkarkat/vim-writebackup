@@ -157,12 +157,14 @@ function! writebackup#WriteBackup( isForced )
 	let l:originalFilespec = expand('%')
 	let l:isNeedToCheckForIdenticalPredecessorAfterBackup = 0
 
-	for l:ExclusionPredicate in g:WriteBackup_ExclusionPredicates
-	    let l:excluded = ingo#actions#EvaluateOrFunc(l:ExclusionPredicate)
-	    if ! empty(l:excluded)
-		throw 'WriteBackup: ' . (type(l:excluded) == type('') ? l:excluded : 'Backup is disallowed') . ' (add ! to override)'
-	    endif
-	endfor
+	if ! a:isForced
+	    for l:ExclusionPredicate in g:WriteBackup_ExclusionPredicates
+		let l:excluded = ingo#actions#EvaluateOrFunc(l:ExclusionPredicate)
+		if ! empty(l:excluded)
+		    throw 'WriteBackup: ' . (type(l:excluded) == type('') ? l:excluded : 'Backup is disallowed') . ' (add ! to override)'
+		endif
+	    endfor
+	endif
 
 	if s:ExistsWriteBackupVersionControlPlugin()
 	    if ! writebackupVersionControl#IsOriginalFile(l:originalFilespec)
