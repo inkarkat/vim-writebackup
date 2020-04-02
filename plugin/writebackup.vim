@@ -29,6 +29,11 @@ if ! exists('g:WriteBackup_AvoidIdenticalBackups')
     let g:WriteBackup_AvoidIdenticalBackups = 'redate'
 endif
 
+if ! exists('g:WriteBackup_ExclusionPredicates')
+    let g:WriteBackup_ExclusionPredicates = []
+endif
+
+
 "- commands -------------------------------------------------------------------
 
 command! -bar -bang WriteBackup if ! writebackup#WriteBackup(<bang>0) | echoerr ingo#err#Get() | endif

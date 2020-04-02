@@ -128,7 +128,8 @@ It must return a String representing the backup dirspec (again either relative
 or absolute, '.' for current directory, please no trailing path separator).
 Throw an exception if you want to abort the backup. If the exception starts
 with 'WriteBackup:', the rest of the exception text will be nicely printed as
-the error text to the user.
+the error text to the user. To just forbid backup creation for certain files,
+use |g:WriteBackup_ExclusionPredicates| instead.
 
 Remember that because of the alphabetic numbering, it doesn't make much sense
 if the backup directory changes for subsequent backups of the same file. Use
@@ -159,6 +160,16 @@ backed up" error, turn off redate via: >
     let g:WriteBackup_AvoidIdenticalBackups = 1
 This reinstates the old behavior of writebackup versions < 3.00.
 
+					   *g:WriteBackup_ExclusionPredicates*
+To disallow a backup for certain files, you can define a List of expressions
+or Funcrefs that are evaluated; if one returns 1 (or a non-empty String, in
+which case this will be the error message), backup of the buffer will be
+skipped (unless |:WriteBackup|! is used). >
+    let g:writebackup_ExclusionPredicates = [
+    \	'expand("%:e") ==? "bak"',
+    \	function('ExcludeScratchFiles')
+    \]
+<
 							   *WriteBackup-alias*
 In case you already have other custom Vim commands starting with W, you can
 define a shorter command alias ':W' in your vimrc to save some keystrokes. I
@@ -180,6 +191,11 @@ https://github.com/inkarkat/vim-writebackup/issues or email (address below).
 
 ==============================================================================
 HISTORY							 *WriteBackup-history*
+
+3.10	02-Apr-2020
+- ENH: Add g:WriteBackup_ExclusionPredicates to disallow writing of backups
+  (unless it is forced via :WriteBackup!), e.g. when another (proper) revision
+  control system (like Git) is used.
 
 3.01	29-Jan-2014
 - :WriteBackup now aborts on error.
