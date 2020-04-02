@@ -182,7 +182,7 @@ https://github.com/inkarkat/vim-writebackup/issues or email (address below).
 HISTORY
 ------------------------------------------------------------------------------
 
-##### 3.10    RELEASEME
+##### 3.10    02-Apr-2020
 - ENH: Add g:WriteBackup\_ExclusionPredicates to disallow writing of backups
   (unless it is forced via :WriteBackup!), e.g. when another (proper) revision
   control system (like Git) is used.
