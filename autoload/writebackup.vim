@@ -4,7 +4,7 @@
 "   - ingo-library.vim plugin
 "   - writebackupVersionControl.vim plugin (optional)
 "
-" Copyright: (C) 2007-2020 Ingo Karkat
+" Copyright: (C) 2007-2021 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
@@ -61,6 +61,10 @@ function! writebackup#AdjustFilespecForBackupDir( originalFilespec, isQueryOnly 
     return l:adjustedDirspec . l:originalFilename
 endfunction
 
+function! s:GetDate() abort
+    return strftime('%Y%m%d')
+endfunction
+
 function! writebackup#GetBackupFilename( originalFilespec, isForced )
 "*******************************************************************************
 "* PURPOSE:
@@ -79,7 +83,7 @@ function! writebackup#GetBackupFilename( originalFilespec, isForced )
 "   the last (existing) backup filespec ('.YYYYMMDDz') is returned.
 "   Throws 'WriteBackup: Ran out of backup file names'.
 "*******************************************************************************
-    let l:date = strftime('%Y%m%d')
+    let l:date = s:GetDate()
     let l:nr = 'a'
     while l:nr <= 'z'
 	let l:backupFilespec = writebackup#AdjustFilespecForBackupDir(a:originalFilespec, 0) . '.' . l:date . l:nr
