@@ -62,7 +62,13 @@ function! writebackup#AdjustFilespecForBackupDir( originalFilespec, isQueryOnly 
 endfunction
 
 function! s:GetDate() abort
-    return strftime('%Y%m%d')
+    if str2nr(strftime('%H')) >= ($BEDTIME_HOUR ==# '' ? 3 : $BEDTIME_HOUR)
+	" Same day, return normal date.
+	return strftime('%Y%m%d')
+    else
+	" Today after midnight, but before bedtime. Return yesterday's date.
+	return strftime('%Y%m%d', localtime() - 86400)
+    endif
 endfunction
 
 function! writebackup#GetBackupFilename( originalFilespec, isForced )

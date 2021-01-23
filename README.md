@@ -173,6 +173,11 @@ write.
 
     command -bar -bang W :WriteBackup<bang>
 
+Backups done in the late-night hours after midnight (by default until 03:00,
+configurable via the $BEDTIME\_HOUR environment variable) will continue to use
+the previous day's timestamp (so that the sequential numbering correctly
+indicates the continuous editing).
+
 CONTRIBUTING
 ------------------------------------------------------------------------------
 
@@ -181,6 +186,12 @@ https://github.com/inkarkat/vim-writebackup/issues or email (address below).
 
 HISTORY
 ------------------------------------------------------------------------------
+
+##### 3.20    RELEASEME
+- ENH: Backups done in the late-night hours after midnight (by default until
+  03:00, configurable via the $BEDTIME\_HOUR environment variable) will
+  continue to use the previous day's timestamp (so that the sequential
+  numbering correctly indicates the continuous editing).
 
 ##### 3.10    02-Apr-2020
 - ENH: Add g:WriteBackup\_ExclusionPredicates to disallow writing of backups
@@ -248,7 +259,7 @@ __PLEASE UPDATE YOUR CONFIGURATION__
 - Started development.
 
 ------------------------------------------------------------------------------
-Copyright: (C) 2007-2020 Ingo Karkat -
+Copyright: (C) 2007-2021 Ingo Karkat -
 The [VIM LICENSE](http://vimdoc.sourceforge.net/htmldoc/uganda.html#license) applies to this plugin.
 
 Maintainer:     Ingo Karkat &lt;ingo@karkat.de&gt;
